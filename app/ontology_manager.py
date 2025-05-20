@@ -1,5 +1,6 @@
 from typing import Optional, List, Dict
 import asyncio
+import logging
 
 import weaviate
 
@@ -11,6 +12,7 @@ class OntologyManager:
     def __init__(self) -> None:
         self._client: Optional[weaviate.Client] = None
         self.config_updater = ConfigUpdater()
+        self.logger = logging.getLogger(__name__)
 
     async def _init_client(self) -> weaviate.Client:
         auth = None
@@ -33,10 +35,16 @@ class OntologyManager:
         """Create a Weaviate collection and load ontology terms into it."""
         client = await self.get_weaviate_client()
 
-        existing = client.schema.get().get("classes", [])
+        schema_details = await asyncio.to_thread(client.schema.get)
+        existing = schema_details.get("classes", [])
         if any(c.get("class") == collection_name for c in existing):
-            client.schema.delete_class(collection_name)
+            self.logger.info(
+                f"Attempting to delete existing collection: {collection_name}"
+            )
+            await asyncio.to_thread(client.schema.delete_class, collection_name)
+            self.logger.info(f"Successfully deleted collection: {collection_name}")
 
+        self.logger.info(f"Creating schema for collection: {collection_name}")
         schema = {
             "class": collection_name,
             "vectorizer": "text2vec-openai",
@@ -46,8 +54,12 @@ class OntologyManager:
                 {"name": "definition", "dataType": ["text"]},
             ],
         }
-        client.schema.create_class(schema)
+        await asyncio.to_thread(client.schema.create_class, schema)
+        self.logger.info(f"Successfully created schema for collection: {collection_name}")
 
+        self.logger.info(
+            f"Starting batch import for {len(ontology_terms)} terms into {collection_name}"
+        )
         with client.batch.dynamic() as batch:
             for term in ontology_terms:
                 batch.add_data_object(
@@ -59,3 +71,6 @@ class OntologyManager:
                     class_name=collection_name,
                 )
         await asyncio.to_thread(client.batch.flush)
+        self.logger.info(
+            f"Successfully imported {len(ontology_terms)} terms into {collection_name}"
+        )

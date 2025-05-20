@@ -31,7 +31,9 @@ if st.button("Resolve"):
         st.error(resp.text)
 
 st.sidebar.header("Admin Panel")
-api_key = st.sidebar.text_input("API Key", type="password")
+api_key = st.sidebar.text_input(
+    "API Key", type="password", value=os.getenv("ADMIN_API_KEY", "")
+)
 
 st.sidebar.subheader("Update Ontology")
 ont_update = st.sidebar.selectbox("Ontology", ["GO", "DOID"], key="upd")

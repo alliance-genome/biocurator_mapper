@@ -18,6 +18,7 @@ OPENAI_API_KEY=sk-... ADMIN_API_KEY=secret docker compose up
 ```
 
 The FastAPI service will be available at `http://localhost:8000` and the Streamlit UI at `http://localhost:8501`.
+Configuration data such as `ontology_versions.json` is stored in a Docker volume (`app_config_data`), so the file may not appear on your host filesystem.
 
 ## API Usage
 
@@ -37,4 +38,4 @@ Run `docker compose up streamlit` (or the whole stack). Open `http://localhost:8
 
 ## Ontology Embeddings
 
-This repository assumes that ontology terms are already embedded and loaded into Weaviate collections. A separate data ingestion pipeline should handle ontology parsing and embedding generation.
+Use the admin endpoint `/admin/update_ontology` to load the small test Gene Ontology included with this repository. For real ontologies you would run an external ingestion pipeline to parse the data and populate Weaviate.

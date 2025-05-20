@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+weaviate-client
+openai
+pydantic
+python-dotenv
+requests
+streamlit

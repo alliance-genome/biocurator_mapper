@@ -2,6 +2,8 @@ import logging
 from datetime import datetime
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Header, Depends
 from fastapi.middleware.cors import CORSMiddleware
+import aiohttp
+import asyncio
 
 from .ontology_manager import OntologyManager
 from .ontology_searcher import OntologySearcher
@@ -60,39 +62,71 @@ async def resolve_biocurated_data(payload: ResolveRequest):
 
 
 async def _perform_ontology_update(ontology_name: str, source_url: str):
-    """Load a small test GO ontology into Weaviate and update config."""
+    """Download the ontology from ``source_url`` and load it into Weaviate."""
     logger.info("Starting ontology update for %s from %s", ontology_name, source_url)
     try:
-        # Small hard-coded GO-like test ontology
-        go_terms = [
-            {
-                "id": "GO:0008150",
-                "name": "biological_process",
-                "definition": (
-                    "Any process specifically pertinent to the functioning of integrated living units."
-                ),
-            },
-            {
-                "id": "GO:0003674",
-                "name": "molecular_function",
-                "definition": (
-                    "Elemental activities, such as catalysis or binding, describing actions of a gene product."
-                ),
-            },
-            {
-                "id": "GO:0005575",
-                "name": "cellular_component",
-                "definition": (
-                    "The part of a cell or its extracellular environment in which a gene product is located."
-                ),
-            },
-        ]
+        parsed_go_terms = []
+
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.get(source_url) as response:
+                    if response.status != 200:
+                        logger.error(
+                            "Failed to download ontology from %s. Status: %s",
+                            source_url,
+                            response.status,
+                        )
+                        raise ValueError(
+                            f"Failed to download ontology. Status: {response.status}"
+                        )
+                    try:
+                        data = await response.json()
+                    except Exception as exc:
+                        logger.exception("Error parsing JSON from %s", source_url)
+                        raise exc
+            except aiohttp.ClientError as exc:
+                logger.exception("Ontology download failed from %s", source_url)
+                raise exc
+
+        nodes = []
+        if isinstance(data, dict):
+            graphs = data.get("graphs", [])
+            if graphs and isinstance(graphs, list):
+                nodes = graphs[0].get("nodes", [])
+        logger.info("Attempting to parse %s nodes from %s", len(nodes), source_url)
+
+        for node in nodes:
+            try:
+                id_uri = node["id"]
+                name = node["lbl"]
+            except KeyError:
+                logger.warning(
+                    "Skipping node due to missing 'id' or 'lbl': %s",
+                    node.get("id", "N/A"),
+                )
+                continue
+
+            term_id = id_uri.split("/")[-1].replace("_", ":")
+            definition = (
+                node.get("meta", {})
+                .get("definition", {})
+                .get("val", "")
+            )
+            parsed_go_terms.append(
+                {"id": term_id, "name": name, "definition": definition}
+            )
+
+        logger.info(
+            "Successfully parsed %s terms from %s", len(parsed_go_terms), source_url
+        )
 
         new_collection = f"{ontology_name}_{int(datetime.utcnow().timestamp())}"
         await ontology_manager.create_and_load_ontology_collection(
-            new_collection, go_terms, OPENAI_API_KEY
+            new_collection, parsed_go_terms, OPENAI_API_KEY
         )
-        config_updater.update_ontology_version(ontology_name, new_collection, source_url)
+        config_updater.update_ontology_version(
+            ontology_name, new_collection, source_url
+        )
         logger.info("Ontology update completed for %s", ontology_name)
     except Exception as exc:  # pragma: no cover - safeguard
         logger.exception("Ontology update failed")

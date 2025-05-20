@@ -1,0 +1,41 @@
+version: '3'
+services:
+  weaviate:
+    image: semitechnologies/weaviate:1.22.5
+    environment:
+      - QUERY_DEFAULTS_LIMIT=25
+      - AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED=true
+      - PERSISTENCE_DATA_PATH=/var/lib/weaviate
+    ports:
+      - "8080:8080"
+    volumes:
+      - weaviate_data:/var/lib/weaviate
+
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ADMIN_API_KEY=${ADMIN_API_KEY}
+      - WEAVIATE_URL=http://weaviate:8080
+    volumes:
+      - ./ontology_versions.json:/app/ontology_versions.json
+    depends_on:
+      - weaviate
+    ports:
+      - "8000:8000"
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    environment:
+      - FASTAPI_URL=http://fastapi:8000
+    depends_on:
+      - fastapi
+    ports:
+      - "8501:8501"
+
+volumes:
+  weaviate_data:

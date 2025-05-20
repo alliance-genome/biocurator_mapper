@@ -6,6 +6,8 @@ services:
       - QUERY_DEFAULTS_LIMIT=25
       - AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED=true
       - PERSISTENCE_DATA_PATH=/var/lib/weaviate
+      - DEFAULT_VECTORIZER_MODULE=text2vec-openai
+      - ENABLE_MODULES=text2vec-openai
     ports:
       - "8080:8080"
     volumes:
@@ -20,7 +22,7 @@ services:
       - ADMIN_API_KEY=${ADMIN_API_KEY}
       - WEAVIATE_URL=http://weaviate:8080
     volumes:
-      - ./ontology_versions.json:/app/ontology_versions.json
+      - app_config_data:/app/ontology_versions.json
     depends_on:
       - weaviate
     ports:
@@ -32,6 +34,7 @@ services:
       dockerfile: Dockerfile.streamlit
     environment:
       - FASTAPI_URL=http://fastapi:8000
+      - ADMIN_API_KEY=${ADMIN_API_KEY}
     depends_on:
       - fastapi
     ports:
@@ -39,3 +42,4 @@ services:
 
 volumes:
   weaviate_data:
+  app_config_data:

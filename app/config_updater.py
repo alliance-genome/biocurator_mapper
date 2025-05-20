@@ -1,10 +1,13 @@
 import json
 import os
 import tempfile
+from datetime import datetime
 from typing import Optional, Dict
 
 from .config import RUNTIME_CONFIG_PATH
 
+# `fcntl` provides POSIX file locking. It is unavailable on Windows. When not
+# present we simply skip locking which is safe for single-user scenarios.
 try:
     import fcntl  # type: ignore
 except ImportError:  # pragma: no cover - not available on Windows
@@ -52,6 +55,7 @@ class ConfigUpdater:
         config[ontology_name] = {
             "collection": new_collection_name,
             "source_url": source_url,
+            "last_updated": datetime.now().isoformat(),
         }
         self._write_config(config)
 

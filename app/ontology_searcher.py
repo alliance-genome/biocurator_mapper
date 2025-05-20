@@ -1,4 +1,5 @@
 from typing import List, Dict
+import asyncio
 
 import openai
 
@@ -11,17 +12,17 @@ class OntologySearcher:
         self.manager = manager
         openai.api_key = openai_api_key
 
-    def _embed_passage(self, passage: str) -> List[float]:
-        response = openai.Embedding.create(input=passage, model="text-embedding-ada-002")
-        return response["data"][0]["embedding"]
+    async def _embed_passage(self, passage: str) -> List[float]:
+        response = await openai.embeddings.create(input=passage, model="text-embedding-ada-002")
+        return response.data[0].embedding
 
-    def search_ontology(
+    async def search_ontology(
         self, passage: str, ontology_collection: str, k: int = DEFAULT_K
     ) -> List[Dict]:
-        client = self.manager.get_weaviate_client()
-        embedding = self._embed_passage(passage)
-        result = (
-            client.query.get(ontology_collection, ["id", "name", "definition"])
+        client = await self.manager.get_weaviate_client()
+        embedding = await self._embed_passage(passage)
+        result = await asyncio.to_thread(
+            lambda: client.query.get(ontology_collection, ["id", "name", "definition"])
             .with_near_vector({"vector": embedding})
             .with_limit(k)
             .do()

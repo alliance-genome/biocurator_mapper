@@ -1,8 +1,9 @@
 fastapi
-uvicorn
+uvicorn[standard]
 weaviate-client
 openai
 pydantic
 python-dotenv
 requests
 streamlit
+aiohttp

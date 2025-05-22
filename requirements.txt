@@ -7,3 +7,9 @@ python-dotenv
 requests
 streamlit
 aiohttp
+pyyaml
+pytest
+pytest-asyncio
+pytest-mock
+pytest-cov
+httpx

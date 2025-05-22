@@ -1,0 +1,38 @@
+ontologies:
+  GO:
+    name: "Gene Ontology"
+    description: "The Gene Ontology (GO) knowledgebase"
+    default_source_url: "http://purl.obolibrary.org/obo/go.json"
+    id_format:
+      separator: ":"
+      prefix_replacement:
+        "_": ":"
+    enabled: true
+    
+  DOID:
+    name: "Disease Ontology"
+    description: "Human Disease Ontology"
+    default_source_url: "http://purl.obolibrary.org/obo/doid.json"
+    id_format:
+      separator: ":"
+      prefix_replacement:
+        "_": ":"
+    enabled: true
+
+# Global settings
+settings:
+  # Default number of results to return
+  default_k: 5
+  
+  # Supported ontology formats
+  supported_formats:
+    - "json"
+    - "obo"
+  
+  # JSON parsing configuration
+  json_parsing:
+    graphs_key: "graphs"
+    nodes_key: "nodes"
+    id_key: "id"
+    label_key: "lbl"
+    definition_path: ["meta", "definition", "val"]

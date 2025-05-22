@@ -172,3 +172,11 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Runtime configuration (created by application)
+ontology_versions.json
+
+# Large data files
+*.json.gz
+go.json
+sample_go_data.json

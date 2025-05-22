@@ -21,8 +21,9 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - ADMIN_API_KEY=${ADMIN_API_KEY}
       - WEAVIATE_URL=http://weaviate:8080
+      - ONTOLOGY_DATA_DIR=/app/data
     volumes:
-      - app_config_data:/app/ontology_versions.json
+      - app_config_data:/app/data
     depends_on:
       - weaviate
     ports:

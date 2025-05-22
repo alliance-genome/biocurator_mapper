@@ -1,46 +1,74 @@
-version: '3'
+version: '3.8'
+
 services:
   weaviate:
     image: semitechnologies/weaviate:1.22.5
+    restart: unless-stopped
     environment:
       - QUERY_DEFAULTS_LIMIT=25
       - AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED=true
       - PERSISTENCE_DATA_PATH=/var/lib/weaviate
       - DEFAULT_VECTORIZER_MODULE=text2vec-openai
       - ENABLE_MODULES=text2vec-openai
+      - LOG_LEVEL=info
     ports:
       - "8080:8080"
     volumes:
       - weaviate_data:/var/lib/weaviate
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/v1/.well-known/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - biocurator-network
 
   fastapi:
     build:
       context: .
       dockerfile: Dockerfile
+    restart: unless-stopped
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - ADMIN_API_KEY=${ADMIN_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ADMIN_API_KEY=${ADMIN_API_KEY:-admin-secret-key}
       - WEAVIATE_URL=http://weaviate:8080
       - ONTOLOGY_DATA_DIR=/app/data
+      - ONTOLOGY_CONFIG_PATH=/app/ontology_config.yaml
     volumes:
       - app_config_data:/app/data
+      - ./ontology_versions.json:/app/ontology_versions.json
     depends_on:
-      - weaviate
+      weaviate:
+        condition: service_healthy
     ports:
       - "8000:8000"
+    networks:
+      - biocurator-network
 
   streamlit:
     build:
       context: .
       dockerfile: Dockerfile.streamlit
+    restart: unless-stopped
     environment:
       - FASTAPI_URL=http://fastapi:8000
-      - ADMIN_API_KEY=${ADMIN_API_KEY}
+      - ADMIN_API_KEY=${ADMIN_API_KEY:-admin-secret-key}
+      - ONTOLOGY_CONFIG_PATH=/app/ontology_config.yaml
     depends_on:
-      - fastapi
+      fastapi:
+        condition: service_healthy
     ports:
       - "8501:8501"
+    networks:
+      - biocurator-network
 
 volumes:
   weaviate_data:
+    driver: local
   app_config_data:
+    driver: local
+
+networks:
+  biocurator-network:
+    driver: bridge

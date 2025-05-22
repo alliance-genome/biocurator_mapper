@@ -1,0 +1,155 @@
+name: Docker Build & Test
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'Dockerfile*'
+      - 'docker-compose*.yml'
+      - 'requirements.txt'
+      - '.dockerignore'
+  push:
+    branches: [ main ]
+    paths:
+      - 'Dockerfile*'
+      - 'docker-compose*.yml'
+      - 'requirements.txt'
+  schedule:
+    # Run weekly to catch base image updates
+    - cron: '0 6 * * 1'
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  docker-lint:
+    name: Dockerfile Lint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Lint Dockerfile
+      uses: hadolint/hadolint-action@v3.1.0
+      with:
+        dockerfile: Dockerfile
+        
+    - name: Lint Streamlit Dockerfile
+      uses: hadolint/hadolint-action@v3.1.0
+      with:
+        dockerfile: Dockerfile.streamlit
+
+  docker-build:
+    name: Docker Build Test
+    runs-on: ubuntu-latest
+    needs: docker-lint
+    strategy:
+      matrix:
+        service: [fastapi, streamlit]
+      fail-fast: false
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Build ${{ matrix.service }} image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        dockerfile: ${{ matrix.service == 'fastapi' && 'Dockerfile' || 'Dockerfile.streamlit' }}
+        target: ${{ matrix.service == 'fastapi' && 'production' || '' }}
+        push: false
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        tags: biocurator-${{ matrix.service }}:test
+
+  docker-compose-test:
+    name: Docker Compose Integration
+    runs-on: ubuntu-latest
+    needs: docker-build
+    # Only run on main branch or when Docker files change
+    if: github.ref == 'refs/heads/main' || contains(github.event.pull_request.changed_files, 'docker')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Create test environment file
+      run: |
+        cat > .env << EOF
+        OPENAI_API_KEY=sk-test-key-for-ci-testing-only
+        ADMIN_API_KEY=test-admin-key-ci
+        EOF
+    
+    - name: Start services with Docker Compose
+      run: |
+        docker-compose up -d --build
+        
+    - name: Wait for services to be ready
+      run: |
+        timeout 300 bash -c 'until curl -f http://localhost:8000/health; do sleep 5; done'
+        timeout 300 bash -c 'until curl -f http://localhost:8501/_stcore/health; do sleep 5; done'
+    
+    - name: Test FastAPI endpoints
+      run: |
+        # Test health endpoint
+        curl -f http://localhost:8000/health
+        
+        # Test API documentation is accessible
+        curl -f http://localhost:8000/docs
+        
+        # Test admin endpoints (should require auth)
+        response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/admin/ontology_status)
+        if [ "$response" != "401" ]; then
+          echo "Expected 401 for unauthorized admin request, got $response"
+          exit 1
+        fi
+    
+    - name: Test Streamlit accessibility
+      run: |
+        # Test Streamlit health
+        curl -f http://localhost:8501/_stcore/health
+        
+        # Test main page loads (should contain app title)
+        curl -s http://localhost:8501 | grep -q "Biocurator Mapper"
+    
+    - name: Check container logs for errors
+      if: failure()
+      run: |
+        echo "=== FastAPI Logs ==="
+        docker-compose logs fastapi
+        echo "=== Streamlit Logs ==="
+        docker-compose logs streamlit
+        echo "=== Weaviate Logs ==="
+        docker-compose logs weaviate
+    
+    - name: Cleanup
+      if: always()
+      run: |
+        docker-compose down -v
+        docker system prune -f
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: docker-build
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Build images for scanning
+      run: |
+        docker build -t biocurator-fastapi:scan .
+        docker build -f Dockerfile.streamlit -t biocurator-streamlit:scan .
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'biocurator-fastapi:scan'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'

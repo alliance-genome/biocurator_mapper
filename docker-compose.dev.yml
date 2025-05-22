@@ -1,0 +1,37 @@
+version: '3.8'
+
+# Development override for docker-compose.yml
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    volumes:
+      - ./app:/app/app
+      - ./ontology_config.yaml:/app/ontology_config.yaml
+      - ./go.json:/app/go.json
+    environment:
+      - PYTHONPATH=/app
+      - RELOAD=true
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  streamlit:
+    volumes:
+      - ./streamlit_app.py:/app/streamlit_app.py
+      - ./ontology_config.yaml:/app/ontology_config.yaml
+    command: ["streamlit", "run", "streamlit_app.py", "--server.fileWatcherType", "poll"]
+
+  # Optional: Add a development database browser
+  weaviate-console:
+    image: semitechnologies/weaviate-console:latest
+    ports:
+      - "3000:80"
+    environment:
+      - WEAVIATE_URL=http://weaviate:8080
+    depends_on:
+      - weaviate
+    networks:
+      - biocurator-network

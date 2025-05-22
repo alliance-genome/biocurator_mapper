@@ -41,6 +41,16 @@ def verify_api_key(x_api_key: str = Header(...)):
         raise HTTPException(status_code=401, detail="Invalid API key")
 
 
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for container orchestration."""
+    return {
+        "status": "healthy",
+        "timestamp": datetime.utcnow().isoformat(),
+        "service": "biocurator-mapper-api"
+    }
+
+
 @app.post("/resolve_biocurated_data", response_model=ResolveResponse)
 async def resolve_biocurated_data(payload: ResolveRequest):
     logger.info("Resolve request for ontology %s", payload.ontology_name)

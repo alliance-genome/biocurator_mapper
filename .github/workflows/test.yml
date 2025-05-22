@@ -7,11 +7,14 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  # Core API tests across multiple Python versions
+  core-tests:
+    name: Core API Tests (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+      fail-fast: false
 
     steps:
     - uses: actions/checkout@v4
@@ -25,8 +28,9 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
         restore-keys: |
+          ${{ runner.os }}-pip-${{ matrix.python-version }}-
           ${{ runner.os }}-pip-
     
     - name: Install dependencies
@@ -34,18 +38,90 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     
-    - name: Run tests with coverage
+    - name: Run core API tests
       env:
-        OPENAI_API_KEY: test_key
+        OPENAI_API_KEY: test_key_for_ci
         WEAVIATE_URL: http://test:8080
         ADMIN_API_KEY: test_admin_key
       run: |
-        pytest tests/test_config.py tests/test_models.py tests/test_go_data_parsing.py tests/test_yaml_config_integration.py --cov=app --cov-report=xml --cov-report=term-missing
+        pytest tests/test_config.py tests/test_models.py tests/test_go_data_parsing.py tests/test_yaml_config_integration.py tests/test_main.py tests/test_version_management_integration.py --cov=app --cov-report=xml --cov-report=term-missing -v
     
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
+      if: matrix.python-version == '3.11' # Only upload once
       with:
         file: ./coverage.xml
         flags: unittests
         name: codecov-umbrella
         fail_ci_if_error: false
+
+  # Streamlit UI tests (only on latest Python)
+  streamlit-tests:
+    name: Streamlit UI Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-streamlit-${{ hashFiles('requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-streamlit-
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run Streamlit tests
+      env:
+        OPENAI_API_KEY: test_key_for_ci
+        ADMIN_API_KEY: test_admin_key
+        FASTAPI_URL: http://test:8000
+      run: |
+        pytest tests/test_streamlit_app.py tests/test_streamlit_integration.py -v
+  
+  # Code quality checks
+  quality-checks:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+    
+    - name: Install quality tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install ruff black isort mypy
+        pip install -r requirements.txt
+    
+    - name: Run ruff linter
+      run: ruff check app/ tests/ --output-format=github
+      continue-on-error: true
+    
+    - name: Check code formatting with black
+      run: black --check app/ tests/
+      continue-on-error: true
+    
+    - name: Check import sorting with isort
+      run: isort --check-only app/ tests/
+      continue-on-error: true
+    
+    # Note: mypy disabled for now due to complex type dependencies
+    # - name: Run type checking with mypy
+    #   run: mypy app/
+    #   continue-on-error: true

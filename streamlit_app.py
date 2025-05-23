@@ -33,21 +33,20 @@ def perform_simple_download(ont_name: str, source_url: str) -> dict:
         filename = f"{ont_name.lower()}_{timestamp}.json"
         file_path = ontology_dir / filename
         
-        # Download the file with a simple progress message
-        with st.spinner(f"Downloading {ont_name} from {source_url}..."):
-            response = requests.get(source_url, stream=True, timeout=300)
-            response.raise_for_status()
-            
-            # Get total size if available
-            total_size = int(response.headers.get('content-length', 0))
-            
-            # Write to file
-            downloaded = 0
-            with open(file_path, 'wb') as f:
-                for chunk in response.iter_content(chunk_size=8192):
-                    if chunk:
-                        f.write(chunk)
-                        downloaded += len(chunk)
+        # Download the file
+        response = requests.get(source_url, stream=True, timeout=300)
+        response.raise_for_status()
+        
+        # Get total size if available
+        total_size = int(response.headers.get('content-length', 0))
+        
+        # Write to file
+        downloaded = 0
+        with open(file_path, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
+                    downloaded += len(chunk)
         
         # Create/update the "latest" symlink
         latest_link = ontology_dir / f"{ont_name.lower()}_latest.json"
@@ -122,6 +121,26 @@ def get_download_history(ont_name: str) -> list:
         return metadata.get(ont_name, [])
     except:
         return []
+
+
+def clear_download_history(ont_name: str):
+    """Clear download history for a specific ontology."""
+    metadata_file = Path("ontology_versions.json")
+    
+    if not metadata_file.exists():
+        return
+    
+    try:
+        with open(metadata_file, 'r') as f:
+            metadata = json.load(f)
+        
+        if ont_name in metadata:
+            metadata[ont_name] = []
+            
+            with open(metadata_file, 'w') as f:
+                json.dump(metadata, f, indent=2)
+    except Exception as e:
+        st.error(f"Failed to clear download history: {e}")
 
 
 
@@ -822,11 +841,18 @@ if st.session_state.get('show_ontology_management', False):
                         # Show download history
                         download_history = get_download_history(ont_name)
                         if download_history:
-                            with st.expander("📜 Download History", expanded=False):
-                                for version in download_history[-3:]:  # Show last 3
-                                    timestamp = datetime.fromisoformat(version['timestamp'])
-                                    st.text(f"📅 {timestamp.strftime('%Y-%m-%d %H:%M:%S')}: "
-                                          f"{version['filename']} ({version['size_mb']:.2f} MB)")
+                            history_col1, history_col2 = st.columns([3, 1])
+                            with history_col1:
+                                st.markdown("#### 📜 Download History")
+                            with history_col2:
+                                if st.button("🗑️ Clear", key=f"clear_history_{ont_name}", help="Clear download history"):
+                                    clear_download_history(ont_name)
+                                    st.rerun()
+                            
+                            for version in download_history[-3:]:  # Show last 3
+                                timestamp = datetime.fromisoformat(version['timestamp'])
+                                st.text(f"📅 {timestamp.strftime('%Y-%m-%d %H:%M:%S')}: "
+                                      f"{version['filename']} ({version['size_mb']:.2f} MB)")
                         
                         # Show any download result
                         if f"download_result_{ont_name}" in st.session_state:
@@ -842,6 +868,17 @@ if st.session_state.get('show_ontology_management', False):
                             # Clear the result after showing
                             if st.button("🔄 Clear Status", key=f"clear_result_{ont_name}"):
                                 del st.session_state[f"download_result_{ont_name}"]
+                                st.rerun()
+                        
+                        # Show download in progress
+                        if st.session_state.get(f"downloading_{ont_name}", False):
+                            st.markdown("---")
+                            st.markdown("**📥 Download Progress:**")
+                            with st.spinner(f"Downloading {ont_name} from {st.session_state.get(f'download_url_{ont_name}', '')}..."):
+                                result = perform_simple_download(ont_name, st.session_state.get(f'download_url_{ont_name}', ''))
+                                st.session_state[f"download_result_{ont_name}"] = result
+                                del st.session_state[f"downloading_{ont_name}"]
+                                del st.session_state[f"download_url_{ont_name}"]
                                 st.rerun()
                     
                     with col2:
@@ -864,16 +901,14 @@ if st.session_state.get('show_ontology_management', False):
                             col_confirm1, col_confirm2 = st.columns(2)
                             with col_confirm1:
                                 if st.button(f"✅ Confirm", key=f"confirm_update_btn_{ont_name}", type="primary"):
-                                    # Perform simple download
-                                    result = perform_simple_download(ont_name, source_url)
-                                    
-                                    # Store result in session state
-                                    st.session_state[f"download_result_{ont_name}"] = result
+                                    # Set download flag and URL
+                                    st.session_state[f"downloading_{ont_name}"] = True
+                                    st.session_state[f"download_url_{ont_name}"] = source_url
                                     
                                     # Clear confirmation state
                                     del st.session_state[f"confirm_update_{ont_name}"]
                                     
-                                    # Rerun to show result
+                                    # Rerun to trigger download in left column
                                     st.rerun()
                             
                             with col_confirm2:
@@ -1193,6 +1228,9 @@ if not any([
             
             st.markdown("**Generated JSON:**")
             st.code(json.dumps(request_json, indent=2), language="json")
+            
+            # Store space for confidence progress bar (will be updated after response)
+            confidence_placeholder = st.empty()
         
         with col2:
             st.markdown("**Response:**")
@@ -1240,9 +1278,12 @@ if not any([
                                         st.markdown("**Best Match:**")
                                         st.markdown(format_ontology_term(best_match))
                                         
+                                        # Display confidence in the left column placeholder
                                         confidence = response_data.get('confidence')
                                         if confidence is not None:
-                                            st.progress(confidence, text=f"Confidence: {confidence:.1%}")
+                                            with confidence_placeholder.container():
+                                                st.markdown("**Confidence:**")
+                                                st.progress(confidence, text=f"Confidence: {confidence:.1%}")
                                         
                                         reason = response_data.get('reason')
                                         if reason:

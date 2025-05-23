@@ -13,6 +13,7 @@ class LLMMatcher:
     def __init__(self, openai_api_key: str = OPENAI_API_KEY):
         openai.api_key = openai_api_key
         self.logger = logging.getLogger(__name__)
+        self.client = openai.OpenAI(api_key=openai_api_key) if openai_api_key else None
 
     def _build_prompt(self, passage: str, candidates: List[Dict]) -> str:
         """Build enhanced prompt with synonym and metadata information."""
@@ -157,3 +158,20 @@ class LLMMatcher:
         except Exception as e:
             self.logger.exception("Failed to generate explanation")
             return f"Match selected based on semantic similarity (explanation generation failed: {e})"
+    
+    async def check_openai_health(self) -> bool:
+        """Check if OpenAI API is healthy and accessible."""
+        try:
+            if not self.client:
+                return False
+            
+            # Try a simple API call to check connectivity
+            response = self.client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": "test"}],
+                max_tokens=5
+            )
+            return True
+        except Exception as e:
+            self.logger.error(f"OpenAI health check failed: {e}")
+            return False

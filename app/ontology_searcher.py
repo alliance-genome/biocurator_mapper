@@ -4,6 +4,7 @@ import logging
 
 import openai
 import weaviate
+import weaviate.classes as wvc
 
 from .config import OPENAI_API_KEY, DEFAULT_K
 from .ontology_manager import OntologyManager
@@ -38,50 +39,48 @@ class OntologySearcher:
         embedding = await self._embed_passage(passage)
         
         try:
-            # Enhanced query that retrieves all stored fields
-            result = await asyncio.to_thread(
-                lambda: client.query.get(
-                    ontology_collection, 
-                    [
-                        "id", 
+            # Get the collection
+            collection = client.collections.get(ontology_collection)
+            
+            # Enhanced query using v4 API
+            response = await asyncio.to_thread(
+                lambda: collection.query.near_vector(
+                    near_vector=embedding,
+                    limit=k,
+                    return_properties=[
+                        "term_id", 
                         "name", 
                         "definition",
                         "exact_synonyms",
                         "narrow_synonyms", 
                         "broad_synonyms",
-                        "all_synonyms",
-                        "cross_references",
-                        "namespace"
-                    ]
+                        "all_synonyms"
+                    ],
+                    return_metadata=["distance", "certainty"]
                 )
-                .with_near_vector({"vector": embedding})
-                .with_limit(k)
-                .with_additional(["distance", "certainty"])  # Include similarity scores
-                .do()
             )
-        except weaviate.exceptions.WeaviateBaseError as e:
+            
+        except Exception as e:
             self.logger.exception(f"Weaviate query failed for collection {ontology_collection}")
             return []
         
-        hits = result.get("data", {}).get("Get", {}).get(ontology_collection, [])
         candidates = []
         
-        for hit in hits:
+        for obj in response.objects:
             # Get similarity metadata
-            additional = hit.get("_additional", {})
-            distance = additional.get("distance", 1.0)
-            certainty = additional.get("certainty", 0.0)
+            distance = obj.metadata.distance if obj.metadata.distance else 1.0
+            certainty = obj.metadata.certainty if obj.metadata.certainty else 0.0
             
             candidate = {
-                "id": hit.get("id"),
-                "name": hit.get("name"),
-                "definition": hit.get("definition"),
-                "exact_synonyms": hit.get("exact_synonyms", []),
-                "narrow_synonyms": hit.get("narrow_synonyms", []),
-                "broad_synonyms": hit.get("broad_synonyms", []),
-                "all_synonyms": hit.get("all_synonyms", []),
-                "cross_references": hit.get("cross_references", []),
-                "namespace": hit.get("namespace", ""),
+                "id": obj.properties.get("term_id"),
+                "name": obj.properties.get("name"),
+                "definition": obj.properties.get("definition"),
+                "exact_synonyms": obj.properties.get("exact_synonyms", []),
+                "narrow_synonyms": obj.properties.get("narrow_synonyms", []),
+                "broad_synonyms": obj.properties.get("broad_synonyms", []),
+                "all_synonyms": obj.properties.get("all_synonyms", []),
+                "cross_references": obj.properties.get("cross_references", []),
+                "namespace": obj.properties.get("namespace", ""),
                 "similarity_distance": distance,
                 "similarity_certainty": certainty
             }
@@ -108,43 +107,44 @@ class OntologySearcher:
         embedding = await self._embed_passage(passage)
         
         try:
-            query = client.query.get(
-                ontology_collection,
-                [
-                    "id", "name", "definition", "exact_synonyms", 
-                    "narrow_synonyms", "broad_synonyms", "all_synonyms",
-                    "cross_references", "namespace"
-                ]
-            ).with_near_vector({"vector": embedding}).with_limit(k)
+            # Get the collection
+            collection = client.collections.get(ontology_collection)
             
-            # Add namespace filter if specified
+            # Build the query with optional filtering
+            where_filter = None
             if namespace_filter:
-                query = query.with_where({
-                    "path": ["namespace"],
-                    "operator": "Equal",
-                    "valueText": namespace_filter
-                })
+                where_filter = wvc.query.Filter.by_property("namespace").equal(namespace_filter)
             
-            result = await asyncio.to_thread(query.do)
+            response = await asyncio.to_thread(
+                lambda: collection.query.near_vector(
+                    near_vector=embedding,
+                    limit=k,
+                    where=where_filter,
+                    return_properties=[
+                        "term_id", "name", "definition", "exact_synonyms", 
+                        "narrow_synonyms", "broad_synonyms", "all_synonyms",
+                        "namespace"
+                    ]
+                )
+            )
             
-        except weaviate.exceptions.WeaviateBaseError as e:
+        except Exception as e:
             self.logger.exception(f"Enhanced filtered query failed: {e}")
             return []
         
-        hits = result.get("data", {}).get("Get", {}).get(ontology_collection, [])
         candidates = []
         
-        for hit in hits:
+        for obj in response.objects:
             candidate = {
-                "id": hit.get("id"),
-                "name": hit.get("name"),
-                "definition": hit.get("definition"),
-                "exact_synonyms": hit.get("exact_synonyms", []),
-                "narrow_synonyms": hit.get("narrow_synonyms", []),
-                "broad_synonyms": hit.get("broad_synonyms", []),
-                "all_synonyms": hit.get("all_synonyms", []),
-                "cross_references": hit.get("cross_references", []),
-                "namespace": hit.get("namespace", "")
+                "id": obj.properties.get("term_id"),
+                "name": obj.properties.get("name"),
+                "definition": obj.properties.get("definition"),
+                "exact_synonyms": obj.properties.get("exact_synonyms", []),
+                "narrow_synonyms": obj.properties.get("narrow_synonyms", []),
+                "broad_synonyms": obj.properties.get("broad_synonyms", []),
+                "all_synonyms": obj.properties.get("all_synonyms", []),
+                "cross_references": obj.properties.get("cross_references", []),
+                "namespace": obj.properties.get("namespace", "")
             }
             candidates.append(candidate)
         

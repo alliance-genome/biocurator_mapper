@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   weaviate:
-    image: semitechnologies/weaviate:1.22.5
+    image: semitechnologies/weaviate:1.23.7
     restart: unless-stopped
     environment:
       - QUERY_DEFAULTS_LIMIT=25
@@ -55,6 +55,7 @@ services:
       - FASTAPI_URL=http://fastapi:8000
       - ADMIN_API_KEY=${ADMIN_API_KEY:-admin-secret-key}
       - ONTOLOGY_CONFIG_PATH=/app/ontology_config.yaml
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
     depends_on:
       fastapi:
         condition: service_healthy

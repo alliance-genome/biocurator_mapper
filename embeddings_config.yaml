@@ -1,0 +1,36 @@
+# Embeddings Configuration for Biocurator Mapper
+# This file controls how ontology terms are embedded for vector search
+
+# OpenAI Embedding Model Configuration
+model:
+  name: "text-ada-002"  # Options: text-ada-002, text-embedding-3-small, text-embedding-3-large
+  dimensions: 1536      # Automatically set based on model
+  
+# Processing Configuration
+processing:
+  batch_size: 100       # Number of terms to process in each batch
+  parallel_processing: true    # Enable concurrent batch processing
+  retry_failed: true          # Retry failed embedding requests
+  max_retries: 3              # Maximum number of retry attempts
+  
+# Text Fields to Include in Embeddings
+vectorize_fields:
+  name: true           # Include ontology term name
+  definition: true     # Include term definition
+  synonyms: true       # Include term synonyms
+  
+# Text Preprocessing Options
+preprocessing:
+  lowercase: false            # Convert text to lowercase
+  remove_punctuation: false   # Remove punctuation marks
+  combine_fields_separator: " | "  # Separator when combining multiple fields
+  
+# Performance Settings
+performance:
+  request_timeout: 30         # Timeout for OpenAI API requests (seconds)
+  rate_limit_delay: 0.1      # Delay between API requests (seconds)
+  
+# Cost and Usage Tracking
+usage:
+  track_tokens: true         # Track token usage for cost estimation
+  log_requests: false        # Log individual embedding requests (for debugging)

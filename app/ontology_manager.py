@@ -3,6 +3,7 @@ import asyncio
 import logging
 
 import weaviate
+import weaviate.classes as wvc
 
 from .config import WEAVIATE_URL, WEAVIATE_API_KEY
 from .config_updater import ConfigUpdater
@@ -12,21 +13,42 @@ class OntologyManager:
     """Enhanced ontology manager that stores richer GO term data for better semantic matching."""
     
     def __init__(self) -> None:
-        self._client: Optional[weaviate.Client] = None
+        self._client: Optional[weaviate.WeaviateClient] = None
         self.config_updater = ConfigUpdater()
         self.logger = logging.getLogger(__name__)
 
-    async def _init_client(self) -> weaviate.Client:
-        auth = None
+    async def _init_client(self) -> weaviate.WeaviateClient:
+        # Extract host and port from URL
+        url_parts = WEAVIATE_URL.replace("http://", "").replace("https://", "").split(":")
+        host = url_parts[0]
+        port = int(url_parts[1]) if len(url_parts) > 1 else 8080
+        
         if WEAVIATE_API_KEY:
-            auth = weaviate.AuthApiKey(WEAVIATE_API_KEY)
-        client = weaviate.Client(url=WEAVIATE_URL, auth_client_secret=auth)
+            client = weaviate.connect_to_weaviate_cloud(
+                cluster_url=WEAVIATE_URL,
+                auth_credentials=weaviate.auth.Auth.api_key(WEAVIATE_API_KEY)
+            )
+        else:
+            client = weaviate.connect_to_local(
+                host=host,
+                port=port
+            )
         return client
 
-    async def get_weaviate_client(self) -> weaviate.Client:
+    async def get_weaviate_client(self) -> weaviate.WeaviateClient:
         if self._client is None:
             self._client = await self._init_client()
         return self._client
+    
+    async def check_weaviate_health(self) -> bool:
+        """Check if Weaviate is healthy and accessible."""
+        try:
+            client = await self.get_weaviate_client()
+            # Check if Weaviate is ready
+            return client.is_ready()
+        except Exception as e:
+            self.logger.error(f"Weaviate health check failed: {e}")
+            return False
 
     def get_current_ontology_version(self, ontology_name: str) -> Optional[str]:
         return self.config_updater.get_current_ontology_version(ontology_name)
@@ -34,7 +56,7 @@ class OntologyManager:
     def _extract_enhanced_term_data(self, raw_term: Dict) -> Dict:
         """Extract all useful fields from GO JSON for better semantic matching."""
         term_data = {
-            "id": raw_term["id"],
+            "term_id": raw_term["id"],
             "name": raw_term["name"], 
             "definition": raw_term.get("definition", "")
         }
@@ -78,46 +100,62 @@ class OntologyManager:
         client = await self.get_weaviate_client()
 
         # Delete existing collection if it exists
-        schema_details = await asyncio.to_thread(client.schema.get)
-        existing = schema_details.get("classes", [])
-        if any(c.get("class") == collection_name for c in existing):
-            self.logger.info(f"Deleting existing collection: {collection_name}")
-            await asyncio.to_thread(client.schema.delete_class, collection_name)
+        try:
+            await asyncio.to_thread(client.collections.delete, collection_name)
+            self.logger.info(f"Deleted existing collection: {collection_name}")
+        except Exception:
+            # Collection doesn't exist, which is fine
+            pass
 
-        # Create enhanced schema with synonym support
-        self.logger.info(f"Creating enhanced schema for collection: {collection_name}")
-        schema = {
-            "class": collection_name,
-            "vectorizer": "text2vec-openai",
-            "moduleConfig": {
-                "text2vec-openai": {
-                    "model": "text-embedding-ada-002",
-                    "modelVersion": "002",
-                    "type": "text"
-                }
-            },
-            "properties": [
-                {"name": "id", "dataType": ["text"]},
-                {"name": "name", "dataType": ["text"]},
-                {"name": "definition", "dataType": ["text"]},
-                {"name": "exact_synonyms", "dataType": ["text[]"]},
-                {"name": "narrow_synonyms", "dataType": ["text[]"]},
-                {"name": "broad_synonyms", "dataType": ["text[]"]},
-                {"name": "all_synonyms", "dataType": ["text[]"]},
-                {
-                    "name": "searchable_text", 
-                    "dataType": ["text"],
-                    "moduleConfig": {
-                        "text2vec-openai": {
-                            "skip": False,  # This field will be vectorized
-                            "vectorizePropertyName": False
-                        }
-                    }
-                }
-            ],
-        }
-        await asyncio.to_thread(client.schema.create_class, schema)
-        self.logger.info(f"Successfully created enhanced schema: {collection_name}")
+        # Create enhanced collection with synonym support
+        self.logger.info(f"Creating enhanced collection: {collection_name}")
+        
+        # Create the collection with proper v4 API
+        await asyncio.to_thread(
+            client.collections.create,
+            name=collection_name,
+            vectorizer_config=wvc.config.Configure.Vectorizer.text2vec_openai(
+                model="ada",
+                model_version="002",
+                type_="text"
+            ),
+            properties=[
+                wvc.config.Property(
+                    name="term_id",
+                    data_type=wvc.config.DataType.TEXT
+                ),
+                wvc.config.Property(
+                    name="name",
+                    data_type=wvc.config.DataType.TEXT
+                ),
+                wvc.config.Property(
+                    name="definition",
+                    data_type=wvc.config.DataType.TEXT
+                ),
+                wvc.config.Property(
+                    name="exact_synonyms",
+                    data_type=wvc.config.DataType.TEXT_ARRAY
+                ),
+                wvc.config.Property(
+                    name="narrow_synonyms",
+                    data_type=wvc.config.DataType.TEXT_ARRAY
+                ),
+                wvc.config.Property(
+                    name="broad_synonyms",
+                    data_type=wvc.config.DataType.TEXT_ARRAY
+                ),
+                wvc.config.Property(
+                    name="all_synonyms",
+                    data_type=wvc.config.DataType.TEXT_ARRAY
+                ),
+                wvc.config.Property(
+                    name="searchable_text",
+                    data_type=wvc.config.DataType.TEXT,
+                    skip_vectorization=False
+                )
+            ]
+        )
+        self.logger.info(f"Successfully created enhanced collection: {collection_name}")
 
         # Process and load enhanced term data
         self.logger.info(f"Processing {len(ontology_terms)} terms for enhanced storage")
@@ -130,20 +168,22 @@ class OntologyManager:
 
         # Batch import enhanced data
         self.logger.info(f"Starting enhanced batch import into {collection_name}")
-        with client.batch.dynamic() as batch:
+        
+        # Get the collection object
+        collection = client.collections.get(collection_name)
+        
+        # Use v4 batch API
+        with collection.batch.dynamic() as batch:
             for term in enhanced_terms:
-                batch.add_data_object(
-                    data_object={
-                        "id": term["id"],
-                        "name": term["name"],
-                        "definition": term["definition"],
-                        "exact_synonyms": term["exact_synonyms"],
-                        "narrow_synonyms": term["narrow_synonyms"],
-                        "broad_synonyms": term["broad_synonyms"],
-                        "all_synonyms": term["all_synonyms"],
-                        "searchable_text": term["searchable_text"]
-                    },
-                    class_name=collection_name,
-                )
-        await asyncio.to_thread(client.batch.flush)
+                batch.add_object({
+                    "term_id": term["term_id"],
+                    "name": term["name"],
+                    "definition": term["definition"],
+                    "exact_synonyms": term["exact_synonyms"],
+                    "narrow_synonyms": term["narrow_synonyms"],
+                    "broad_synonyms": term["broad_synonyms"],
+                    "all_synonyms": term["all_synonyms"],
+                    "searchable_text": term["searchable_text"]
+                })
+        
         self.logger.info(f"Successfully imported enhanced data for {len(enhanced_terms)} terms")

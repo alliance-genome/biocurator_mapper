@@ -145,42 +145,113 @@ def clear_download_history(ont_name: str):
 
 
 def show_embedding_progress(ont_name: str, api_key: str):
-    """Display embedding generation progress with manual polling."""
+    """Display embedding generation progress with real-time updates."""
     if f"embedding_progress_{ont_name}" not in st.session_state:
         return
     
     st.markdown("---")
     st.markdown("**🤖 Embedding Progress:**")
     
-    progress_info = st.session_state[f"embedding_progress_{ont_name}"]
-    start_time = progress_info.get("timestamp", time.time())
-    elapsed = time.time() - start_time
-    status = progress_info.get("status", "unknown")
-    
-    if status == "started":
-        st.info(f"⏳ Embedding generation started {elapsed:.0f}s ago...")
-        # TODO: Add real progress tracking via API when implemented
-        st.progress(0.1, text="Initializing embeddings...")
+    # Get real-time progress from API
+    try:
+        resp = requests.get(
+            f"{FASTAPI_URL}/admin/embedding_progress/{ont_name}",
+            headers={"X-API-Key": api_key},
+            timeout=5
+        )
         
-        # Simulated progress for now
-        if elapsed < 10:
-            st.progress(0.2, text="Loading ontology terms...")
-        elif elapsed < 20:
-            st.progress(0.5, text="Generating embeddings...")
-        elif elapsed < 30:
-            st.progress(0.8, text="Storing vectors...")
+        if resp.ok:
+            progress_data = resp.json()
+            status = progress_data.get("status", "unknown")
+            percentage = progress_data.get("progress_percentage", 0)
+            elapsed = progress_data.get("elapsed_seconds", 0)
+            
+            # Status message
+            if status == "starting":
+                st.info(f"⏳ Starting embedding generation ({elapsed}s elapsed)...")
+            elif status == "initializing":
+                st.info(f"🔧 Initializing ({elapsed}s elapsed)...")
+            elif status == "processing_terms":
+                st.info(f"📝 Processing terms ({elapsed}s elapsed)...")
+            elif status == "embedding_generation" or status == "embedding_batch":
+                st.info(f"🧠 Generating embeddings ({elapsed}s elapsed)...")
+            elif status == "completed":
+                st.success(f"✅ Embedding generation completed! ({elapsed}s total)")
+            elif status == "failed":
+                st.error(f"❌ Embedding generation failed ({elapsed}s elapsed)")
+            elif status == "cancelled":
+                st.warning(f"⚠️ Embedding generation cancelled ({elapsed}s elapsed)")
+            
+            # Progress bar
+            st.progress(percentage / 100, text=f"Progress: {percentage}%")
+            
+            # Embedding statistics
+            embedding_stats = progress_data.get("embedding_stats", {})
+            if embedding_stats:
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.metric("Terms Processed", 
+                             f"{embedding_stats.get('processed_terms', 0):,} / {embedding_stats.get('total_terms', 0):,}")
+                with col2:
+                    st.metric("Batches Complete", 
+                             f"{embedding_stats.get('batches_completed', 0)} / {embedding_stats.get('total_batches', 0)}")
+                with col3:
+                    terms_per_sec = progress_data.get("terms_per_second", 0)
+                    if terms_per_sec > 0:
+                        st.metric("Speed", f"{terms_per_sec:.1f} terms/s")
+                    else:
+                        st.metric("Failed Terms", embedding_stats.get('failed_terms', 0))
+            
+            # Recent logs
+            recent_logs = progress_data.get("recent_logs", [])
+            if recent_logs:
+                st.markdown("#### 📋 Embedding Logs")
+                log_text = ""
+                for log in recent_logs:
+                    timestamp = log.get("timestamp", "")
+                    message = log.get("message", "")
+                    level = log.get("level", "INFO")
+                    
+                    # Color-code by level
+                    if level == "ERROR":
+                        log_text += f"🔴 [{timestamp}] {message}\n"
+                    elif level == "WARNING":
+                        log_text += f"🟡 [{timestamp}] {message}\n"
+                    else:
+                        log_text += f"⚪ [{timestamp}] {message}\n"
+                    
+                    st.text(log_text)
+            
+            # Cancel button for embeddings (only if not completed)
+            if status not in ["completed", "failed", "cancelled"]:
+                if st.button(f"❌ Cancel Embeddings", key=f"cancel_embedding_{ont_name}", type="secondary"):
+                    try:
+                        cancel_resp = requests.delete(
+                            f"{FASTAPI_URL}/admin/embedding_progress/{ont_name}",
+                            headers={"X-API-Key": api_key},
+                            timeout=5
+                        )
+                        if cancel_resp.ok:
+                            st.warning("⚠️ Embedding generation cancellation requested")
+                        else:
+                            st.error("❌ Failed to cancel embedding generation")
+                    except Exception as e:
+                        st.error(f"❌ Error cancelling: {str(e)}")
+            
+            # Clear button if completed/failed/cancelled
+            if status in ["completed", "failed", "cancelled"]:
+                if st.button(f"🔄 Clear Status", key=f"clear_embedding_{ont_name}"):
+                    del st.session_state[f"embedding_progress_{ont_name}"]
+                    st.rerun()
+        
         else:
-            st.progress(0.9, text="Finalizing...")
-    
-    # TODO: Add real-time log display when API is ready
-    with st.expander("📋 View Embedding Logs", expanded=False):
-        st.code("Embedding generation started...\nProcessing ontology terms...\n[Real-time logs will appear here when API is implemented]")
-    
-    # Cancel button for embeddings
-    if st.button(f"❌ Cancel Embeddings", key=f"cancel_embedding_{ont_name}", type="secondary"):
-        # TODO: Implement cancellation when API endpoint is ready
-        st.warning("⚠️ Embedding cancellation not yet implemented")
-        del st.session_state[f"embedding_progress_{ont_name}"]
+            # No active embedding generation found
+            st.warning("⚠️ No active embedding generation found")
+            del st.session_state[f"embedding_progress_{ont_name}"]
+            
+    except Exception as e:
+        st.error(f"❌ Error checking embedding progress: {str(e)}")
+        # Keep the progress state to retry
 
 @st.cache_data
 def load_ontology_config():
@@ -870,16 +941,49 @@ if st.session_state.get('show_ontology_management', False):
                                 del st.session_state[f"download_result_{ont_name}"]
                                 st.rerun()
                         
-                        # Show download in progress
-                        if st.session_state.get(f"downloading_{ont_name}", False):
+                        # Show update progress if available
+                        if f"update_progress_{ont_name}" in st.session_state:
                             st.markdown("---")
-                            st.markdown("**📥 Download Progress:**")
-                            with st.spinner(f"Downloading {ont_name} from {st.session_state.get(f'download_url_{ont_name}', '')}..."):
-                                result = perform_simple_download(ont_name, st.session_state.get(f'download_url_{ont_name}', ''))
-                                st.session_state[f"download_result_{ont_name}"] = result
-                                del st.session_state[f"downloading_{ont_name}"]
-                                del st.session_state[f"download_url_{ont_name}"]
-                                st.rerun()
+                            st.markdown("**📥 Update Progress:**")
+                            
+                            # Poll the backend for progress
+                            try:
+                                api_key = st.session_state.get('api_key', '')
+                                resp = requests.get(
+                                    f"{FASTAPI_URL}/admin/update_progress/{ont_name}",
+                                    headers={"X-API-Key": api_key},
+                                    timeout=5
+                                )
+                                
+                                if resp.ok:
+                                    progress_data = resp.json()
+                                    status = progress_data.get("status", "unknown")
+                                    percentage = progress_data.get("progress_percentage", 0)
+                                    
+                                    # Display progress bar
+                                    st.progress(percentage / 100, text=f"Status: {status} - {percentage}%")
+                                    
+                                    # Display recent logs
+                                    recent_logs = progress_data.get("recent_logs", [])
+                                    if recent_logs:
+                                        log_text = ""
+                                        for log in recent_logs[-5:]:  # Show last 5 logs
+                                            log_text += f"{log.get('timestamp', '')} - {log.get('message', '')}\n"
+                                        st.code(log_text)
+                                    
+                                    # If completed, clear the progress state
+                                    if status in ["completed", "failed", "cancelled"]:
+                                        if st.button(f"🔄 Clear Status", key=f"clear_update_{ont_name}"):
+                                            del st.session_state[f"update_progress_{ont_name}"]
+                                            st.rerun()
+                                    else:
+                                        # Add refresh button
+                                        if st.button(f"🔄 Refresh", key=f"refresh_update_{ont_name}"):
+                                            st.rerun()
+                                else:
+                                    st.error(f"Failed to get update progress: {resp.text}")
+                            except Exception as e:
+                                st.error(f"Error fetching update progress: {str(e)}")
                     
                     with col2:
                         st.markdown("**Actions:**")
@@ -901,14 +1005,39 @@ if st.session_state.get('show_ontology_management', False):
                             col_confirm1, col_confirm2 = st.columns(2)
                             with col_confirm1:
                                 if st.button(f"✅ Confirm", key=f"confirm_update_btn_{ont_name}", type="primary"):
-                                    # Set download flag and URL
-                                    st.session_state[f"downloading_{ont_name}"] = True
-                                    st.session_state[f"download_url_{ont_name}"] = source_url
+                                    # Call the FastAPI update endpoint instead of local download
+                                    with st.spinner(f"Starting ontology update for {ont_name}..."):
+                                        try:
+                                            api_key = st.session_state.get('api_key', '')
+                                            if not api_key:
+                                                st.error("❌ API key not found. Please enter your API key in the sidebar.")
+                                                st.stop()
+                                            
+                                            resp = requests.post(
+                                                f"{FASTAPI_URL}/admin/update_ontology",
+                                                headers={"X-API-Key": api_key},
+                                                json={
+                                                    "ontology_name": ont_name,
+                                                    "source_url": source_url
+                                                },
+                                                timeout=10
+                                            )
+                                            
+                                            if resp.ok:
+                                                st.success(f"✅ Ontology update started for {ont_name}")
+                                                # Store operation in session state for progress tracking
+                                                st.session_state[f"update_progress_{ont_name}"] = {
+                                                    "status": "started",
+                                                    "ontology": ont_name,
+                                                    "timestamp": time.time()
+                                                }
+                                            else:
+                                                st.error(f"❌ Failed to start update: {resp.text}")
+                                        except Exception as e:
+                                            st.error(f"❌ Error starting update: {str(e)}")
                                     
                                     # Clear confirmation state
                                     del st.session_state[f"confirm_update_{ont_name}"]
-                                    
-                                    # Rerun to trigger download in left column
                                     st.rerun()
                             
                             with col_confirm2:
@@ -926,60 +1055,111 @@ if st.session_state.get('show_ontology_management', False):
                         
                         # Create Embeddings Button with warnings
                         st.markdown("---")
-                        if st.button(f"🧠 Create Embeddings", key=f"embed_{ont_name}", help="Generate embeddings for this ontology"):
-                            # Multiple confirmation steps for expensive operation
-                            if f"confirm_embed_step1_{ont_name}" not in st.session_state:
+                        
+                        # Check if we're in any stage of the embedding confirmation process
+                        if f"confirm_embed_step1_{ont_name}" not in st.session_state and f"confirm_embed_step2_{ont_name}" not in st.session_state:
+                            # Initial button to start the process
+                            if st.button(f"🧠 Create Embeddings", key=f"embed_{ont_name}", help="Generate embeddings for this ontology"):
                                 st.session_state[f"confirm_embed_step1_{ont_name}"] = True
-                                st.error("⚠️ **WARNING: This operation costs money!**")
-                                st.warning(f"This will generate embeddings for all terms in {ont_name} using OpenAI's API.")
-                                st.info(f"Estimated cost: ~${estimated_cost:.5f} per 1,000 tokens")
-                                
-                                if st.button(f"💸 I Understand the Cost", key=f"cost_confirm_{ont_name}"):
+                                st.rerun()
+                        
+                        # Show first confirmation step
+                        elif f"confirm_embed_step1_{ont_name}" in st.session_state and f"confirm_embed_step2_{ont_name}" not in st.session_state:
+                            st.error("⚠️ **WARNING: This operation costs money!**")
+                            st.warning(f"This will generate embeddings for all terms in {ont_name} using OpenAI's API.")
+                            st.info(f"Estimated cost: ~${estimated_cost:.5f} per 1,000 tokens")
+                            
+                            col1, col2 = st.columns(2)
+                            with col1:
+                                if st.button(f"💸 I Understand the Cost", key=f"cost_confirm_{ont_name}", type="primary"):
                                     st.session_state[f"confirm_embed_step2_{ont_name}"] = True
                                     st.rerun()
+                            with col2:
+                                if st.button(f"❌ Cancel", key=f"cancel_cost_confirm_{ont_name}"):
+                                    del st.session_state[f"confirm_embed_step1_{ont_name}"]
+                                    st.rerun()
+                        
+                        # Show final confirmation step
+                        elif f"confirm_embed_step2_{ont_name}" in st.session_state:
+                            st.warning("⚠️ **Final confirmation required:**")
+                            st.markdown(f"**Ontology:** {ont_name}")
+                            st.markdown(f"**Model:** {model_name}")
+                            st.markdown(f"**This action cannot be undone easily.**")
                             
-                            elif f"confirm_embed_step2_{ont_name}" in st.session_state:
-                                st.warning("⚠️ **Final confirmation required:**")
-                                st.markdown(f"**Ontology:** {ont_name}")
-                                st.markdown(f"**Model:** {model_name}")
-                                st.markdown(f"**This action cannot be undone easily.**")
-                                
-                                col_confirm1, col_confirm2 = st.columns(2)
-                                with col_confirm1:
-                                    if st.button(f"🚀 START EMBEDDINGS", key=f"final_confirm_{ont_name}", type="primary"):
-                                        # Start embedding process
-                                        with st.spinner(f"Starting embeddings for {ont_name}..."):
-                                            try:
-                                                # TODO: Call embedding API endpoint
-                                                st.info(f"🚀 Starting embedding generation for {ont_name}")
-                                                st.warning("⚠️ Embedding API endpoint not yet implemented")
+                            col_confirm1, col_confirm2 = st.columns(2)
+                            with col_confirm1:
+                                if st.button(f"🚀 START EMBEDDINGS", key=f"final_confirm_{ont_name}", type="primary"):
+                                    # Start embedding process
+                                    with st.spinner(f"Checking OpenAI API and starting embeddings for {ont_name}..."):
+                                        try:
+                                            # Get API key from session state
+                                            api_key = st.session_state.get('api_key', '')
+                                            if not api_key:
+                                                st.error("❌ API key not found. Please enter your API key in the sidebar.")
+                                                st.stop()
+                                            
+                                            # First check OpenAI health
+                                            health_resp = requests.get(
+                                                f"{FASTAPI_URL}/admin/openai_health",
+                                                headers={"X-API-Key": api_key},
+                                                timeout=5
+                                            )
+                                            
+                                            if health_resp.ok:
+                                                health_data = health_resp.json()
+                                                if not health_data.get("healthy", False):
+                                                    st.error(f"❌ OpenAI API is not accessible: {health_data.get('details', 'Unknown error')}")
+                                                    # Clear confirmation states
+                                                    if f"confirm_embed_step1_{ont_name}" in st.session_state:
+                                                        del st.session_state[f"confirm_embed_step1_{ont_name}"]
+                                                    if f"confirm_embed_step2_{ont_name}" in st.session_state:
+                                                        del st.session_state[f"confirm_embed_step2_{ont_name}"]
+                                                    st.stop()
+                                            else:
+                                                st.error(f"❌ Failed to check OpenAI health: {health_resp.text}")
+                                                st.stop()
+                                            
+                                            # Call embedding API endpoint
+                                            resp = requests.post(
+                                                f"{FASTAPI_URL}/admin/generate_embeddings",
+                                                headers={"X-API-Key": api_key},
+                                                json={"ontology_name": ont_name},
+                                                timeout=10
+                                            )
+                                            
+                                            if resp.ok:
+                                                st.success(f"✅ Embedding generation started for {ont_name}")
                                                 # Store operation in session state for progress tracking
                                                 st.session_state[f"embedding_progress_{ont_name}"] = {
                                                     "status": "started",
                                                     "ontology": ont_name,
                                                     "timestamp": time.time()
                                                 }
-                                            except Exception as e:
-                                                st.error(f"❌ Error starting embeddings: {str(e)}")
-                                        # Clear confirmation states
-                                        if f"confirm_embed_step1_{ont_name}" in st.session_state:
-                                            del st.session_state[f"confirm_embed_step1_{ont_name}"]
-                                        if f"confirm_embed_step2_{ont_name}" in st.session_state:
-                                            del st.session_state[f"confirm_embed_step2_{ont_name}"]
-                                        st.rerun()
-                                
-                                with col_confirm2:
-                                    if st.button(f"❌ Cancel", key=f"cancel_embed_{ont_name}"):
-                                        # Clear confirmation states
-                                        if f"confirm_embed_step1_{ont_name}" in st.session_state:
-                                            del st.session_state[f"confirm_embed_step1_{ont_name}"]
-                                        if f"confirm_embed_step2_{ont_name}" in st.session_state:
-                                            del st.session_state[f"confirm_embed_step2_{ont_name}"]
-                                        st.rerun()
+                                            else:
+                                                st.error(f"❌ Failed to start embeddings: {resp.text}")
+                                        except Exception as e:
+                                            st.error(f"❌ Error starting embeddings: {str(e)}")
+                                    # Clear confirmation states
+                                    if f"confirm_embed_step1_{ont_name}" in st.session_state:
+                                        del st.session_state[f"confirm_embed_step1_{ont_name}"]
+                                    if f"confirm_embed_step2_{ont_name}" in st.session_state:
+                                        del st.session_state[f"confirm_embed_step2_{ont_name}"]
+                                    st.rerun()
+                            
+                            with col_confirm2:
+                                if st.button(f"❌ Cancel", key=f"cancel_embed_{ont_name}"):
+                                    # Clear confirmation states
+                                    if f"confirm_embed_step1_{ont_name}" in st.session_state:
+                                        del st.session_state[f"confirm_embed_step1_{ont_name}"]
+                                    if f"confirm_embed_step2_{ont_name}" in st.session_state:
+                                        del st.session_state[f"confirm_embed_step2_{ont_name}"]
+                                    st.rerun()
                         
-                        # Show embedding progress if available using fragment
-                        if f"embedding_progress_{ont_name}" in st.session_state:
-                            show_embedding_progress(ont_name, st.session_state.get('api_key', ''))
+                    # Close the ontology expander before showing embedding progress
+                    
+                # Show embedding progress OUTSIDE the expander
+                if f"embedding_progress_{ont_name}" in st.session_state:
+                    show_embedding_progress(ont_name, st.session_state.get('api_key', ''))
     
     # Cancel button
     st.markdown("---")
@@ -1394,7 +1574,8 @@ if not any([
                 "Version Status": "/admin/version_status", 
                 "Collections": "/admin/collections",
                 "Weaviate Health": "/admin/weaviate_health",
-                "OpenAI Health": "/admin/openai_health"
+                "OpenAI Health": "/admin/openai_health",
+                "Embeddings Config": "/admin/embeddings_config"
             }
             
             selected_endpoint = st.selectbox("Select Status Endpoint:", list(status_endpoints.keys()))

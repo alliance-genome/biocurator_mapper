@@ -3,6 +3,7 @@ import logging
 import os
 import time
 from datetime import datetime
+from typing import Dict, Any
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Header, Depends
 from fastapi.middleware.cors import CORSMiddleware
 import aiohttp
@@ -14,7 +15,7 @@ from .ontology_manager import OntologyManager
 from .ontology_searcher import OntologySearcher
 from .llm_matcher import LLMMatcher
 from .config_updater import ConfigUpdater
-from .config import ADMIN_API_KEY, OPENAI_API_KEY, ONTOLOGY_CONFIG, load_ontology_config
+from .config import ADMIN_API_KEY, OPENAI_API_KEY, ONTOLOGY_CONFIG, load_ontology_config, EMBEDDINGS_CONFIG, load_embeddings_config
 from .go_parser import parse_go_json_enhanced
 from .ontology_version_manager import OntologyVersionManager
 from .models import (
@@ -42,6 +43,7 @@ version_manager = OntologyVersionManager()
 
 # Progress tracking store (in-memory for now)
 update_progress_store = {}
+embedding_progress_store = {}
 # Track background tasks for cancellation
 background_tasks_store = {}
 
@@ -269,8 +271,22 @@ async def _perform_ontology_update(ontology_name: str, source_url: str):
         update_progress("embedding", 70, f"Creating embeddings for {len(parsed_terms)} terms...")
 
         new_collection = f"{ontology_name}_{int(datetime.utcnow().timestamp())}"
+        # Create embedding progress callback
+        def embedding_progress_callback(status: str, percentage: int, message: str, extra_data: dict):
+            """Update embedding progress in the main progress tracker."""
+            if progress_key in update_progress_store:
+                update_progress_store[progress_key].update({
+                    "embedding_status": status,
+                    "embedding_percentage": percentage,
+                    "embedding_message": message,
+                    "embedding_stats": extra_data
+                })
+                # Update overall progress (70-90% for embeddings)
+                overall_percentage = 70 + int(percentage * 0.2)
+                update_progress("embedding", overall_percentage, message)
+        
         await ontology_manager.create_and_load_ontology_collection(
-            new_collection, parsed_terms, OPENAI_API_KEY
+            new_collection, parsed_terms, OPENAI_API_KEY, embedding_progress_callback
         )
         
         update_progress("finalizing", 90, "Storing version metadata...")
@@ -404,15 +420,217 @@ async def reload_config(api_key: str = Depends(verify_api_key)):
     """Reload ontology configuration from file."""
     try:
         # Reload the configuration
-        global ONTOLOGY_CONFIG
+        global ONTOLOGY_CONFIG, EMBEDDINGS_CONFIG
         ONTOLOGY_CONFIG = load_ontology_config()
+        EMBEDDINGS_CONFIG = load_embeddings_config()
         
         logger.info("Configuration reloaded successfully")
         return {
             "status": "success",
             "message": "Configuration reloaded successfully",
-            "ontologies": list(ONTOLOGY_CONFIG.get("ontologies", {}).keys())
+            "ontologies": list(ONTOLOGY_CONFIG.get("ontologies", {}).keys()),
+            "embedding_model": EMBEDDINGS_CONFIG.get("model", {}).get("name")
         }
     except Exception as e:
         logger.exception("Failed to reload configuration")
         raise HTTPException(status_code=500, detail=f"Failed to reload config: {str(e)}")
+
+
+async def _generate_embeddings_only(ontology_name: str, collection_name: str = None):
+    """Generate embeddings for an existing ontology without downloading."""
+    
+    # Initialize progress tracking
+    progress_key = f"{ontology_name}_embeddings"
+    embedding_progress_store[progress_key] = {
+        "status": "starting",
+        "progress_percentage": 0,
+        "recent_logs": [],
+        "started_at": time.time(),
+        "ontology_name": ontology_name,
+        "collection_name": collection_name,
+        "embedding_stats": {}
+    }
+    
+    def add_log(message: str, level: str = "INFO"):
+        """Add a log entry to progress tracking."""
+        timestamp = datetime.utcnow().strftime("%H:%M:%S")
+        log_entry = {
+            "timestamp": timestamp,
+            "message": message,
+            "level": level
+        }
+        if progress_key in embedding_progress_store:
+            embedding_progress_store[progress_key]["recent_logs"].append(log_entry)
+            # Keep only last 10 logs
+            embedding_progress_store[progress_key]["recent_logs"] = embedding_progress_store[progress_key]["recent_logs"][-10:]
+        logger.info("Embeddings %s: %s", ontology_name, message)
+
+    def update_progress(status: str, percentage: int, message: str = "", **kwargs):
+        """Update progress status."""
+        if progress_key in embedding_progress_store:
+            embedding_progress_store[progress_key].update({
+                "status": status,
+                "progress_percentage": percentage
+            })
+            if kwargs:
+                embedding_progress_store[progress_key].update(kwargs)
+            if message:
+                add_log(message)
+
+    try:
+        add_log(f"Starting embedding generation for {ontology_name}")
+        update_progress("starting", 5, "Initializing embedding generation...")
+
+        # Get the persistent data directory from environment
+        data_dir = os.environ.get("ONTOLOGY_DATA_DIR", "/app/data")
+        source_ontologies_dir = os.path.join(data_dir, "source_ontologies")
+        filename = f"{ontology_name}.json"
+        file_path = os.path.join(source_ontologies_dir, filename)
+        
+        # Check if source file exists
+        if not os.path.exists(file_path):
+            error_msg = f"Source file not found: {file_path}"
+            add_log(error_msg, "ERROR")
+            update_progress("failed", 0, error_msg)
+            raise HTTPException(status_code=404, detail=error_msg)
+            
+        update_progress("loading", 10, f"Loading ontology data from {filename}")
+        
+        # Load the ontology data
+        try:
+            async with aiofiles.open(file_path, 'r') as f:
+                content = await f.read()
+                data = json.loads(content)
+            add_log("Successfully loaded JSON data")
+        except Exception as exc:
+            error_msg = f"Error loading JSON: {str(exc)}"
+            add_log(error_msg, "ERROR")
+            update_progress("failed", 0, error_msg)
+            raise exc
+
+        update_progress("parsing", 20, "Parsing ontology terms...")
+
+        # Get ontology-specific configuration
+        ontology_config = get_ontology_config(ontology_name)
+        
+        # Use enhanced GO parser for comprehensive data extraction
+        id_format = ontology_config.get("id_format", {"prefix_replacement": {"_": ":"}})
+        parsed_terms = parse_go_json_enhanced(data, id_format)
+
+        add_log(f"Successfully parsed {len(parsed_terms)} terms")
+        update_progress("embedding", 30, f"Creating embeddings for {len(parsed_terms)} terms...")
+
+        # Generate new collection name if not provided
+        if not collection_name:
+            collection_name = f"{ontology_name}_{int(datetime.utcnow().timestamp())}"
+            
+        # Create embedding progress callback
+        def embedding_progress_callback(status: str, percentage: int, message: str, extra_data: dict):
+            """Update embedding progress."""
+            if progress_key in embedding_progress_store:
+                embedding_progress_store[progress_key]["embedding_stats"] = extra_data
+                # Map embedding progress to overall progress (30-95%)
+                overall_percentage = 30 + int(percentage * 0.65)
+                update_progress(
+                    status,
+                    overall_percentage,
+                    message,
+                    embedding_stats=extra_data
+                )
+        
+        await ontology_manager.create_and_load_ontology_collection(
+            collection_name, parsed_terms, OPENAI_API_KEY, embedding_progress_callback
+        )
+        
+        update_progress("finalizing", 96, "Updating configuration...")
+        
+        # Update configuration to use new collection
+        config_updater.update_ontology_version(
+            ontology_name, collection_name, "embeddings_only"
+        )
+        
+        add_log(f"Embedding generation completed successfully. Collection: {collection_name}")
+        update_progress("completed", 100, "Embeddings generated successfully!")
+        
+        return collection_name
+        
+    except Exception as exc:
+        error_msg = f"Embedding generation failed: {str(exc)}"
+        add_log(error_msg, "ERROR")
+        update_progress("failed", 0, error_msg)
+        logger.exception("Embedding generation failed")
+        raise exc
+
+
+@app.post("/admin/generate_embeddings")
+async def generate_embeddings(
+    request: Dict[str, str],
+    background_tasks: BackgroundTasks,
+    api_key: str = Depends(verify_api_key),
+):
+    """Generate embeddings for an existing ontology file."""
+    ontology_name = request.get("ontology_name")
+    collection_name = request.get("collection_name", None)
+    
+    if not ontology_name:
+        raise HTTPException(status_code=400, detail="ontology_name is required")
+        
+    background_tasks.add_task(
+        _generate_embeddings_only, ontology_name, collection_name
+    )
+    return {"status": "embedding generation started"}
+
+
+@app.get("/admin/embedding_progress/{ontology_name}")
+async def get_embedding_progress(ontology_name: str, api_key: str = Depends(verify_api_key)):
+    """Get progress information for embedding generation."""
+    progress_key = f"{ontology_name}_embeddings"
+    if progress_key not in embedding_progress_store:
+        raise HTTPException(status_code=404, detail="No active embedding generation found for this ontology")
+    
+    progress_data = embedding_progress_store[progress_key].copy()
+    
+    # Calculate elapsed time
+    elapsed_time = time.time() - progress_data.get("started_at", time.time())
+    progress_data["elapsed_seconds"] = int(elapsed_time)
+    
+    # Add embedding-specific stats
+    embedding_stats = progress_data.get("embedding_stats", {})
+    if embedding_stats:
+        progress_data["terms_processed"] = embedding_stats.get("processed_terms", 0)
+        progress_data["terms_failed"] = embedding_stats.get("failed_terms", 0)
+        progress_data["batches_completed"] = embedding_stats.get("batches_completed", 0)
+        progress_data["total_batches"] = embedding_stats.get("total_batches", 0)
+        
+        # Calculate rate
+        if elapsed_time > 0 and embedding_stats.get("processed_terms", 0) > 0:
+            progress_data["terms_per_second"] = round(
+                embedding_stats["processed_terms"] / elapsed_time, 2
+            )
+    
+    return progress_data
+
+
+@app.delete("/admin/embedding_progress/{ontology_name}")
+async def cancel_embedding_generation(ontology_name: str, api_key: str = Depends(verify_api_key)):
+    """Cancel an ongoing embedding generation."""
+    progress_key = f"{ontology_name}_embeddings"
+    if progress_key not in embedding_progress_store:
+        raise HTTPException(status_code=404, detail="No active embedding generation found for this ontology")
+    
+    # Mark as cancelled in progress store
+    if progress_key in embedding_progress_store:
+        embedding_progress_store[progress_key]["status"] = "cancelled"
+        embedding_progress_store[progress_key]["recent_logs"].append({
+            "timestamp": datetime.utcnow().strftime("%H:%M:%S"),
+            "message": "Embedding generation cancelled by user",
+            "level": "WARNING"
+        })
+    
+    return {"status": "Embedding generation marked for cancellation"}
+
+
+@app.get("/admin/embeddings_config")
+async def get_embeddings_config(api_key: str = Depends(verify_api_key)):
+    """Get current embeddings configuration."""
+    return EMBEDDINGS_CONFIG

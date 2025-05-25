@@ -10,6 +10,7 @@ import aiohttp
 import aiofiles
 import asyncio
 import requests
+import openai
 
 from .ontology_manager import OntologyManager
 from .ontology_searcher import OntologySearcher
@@ -46,6 +47,8 @@ update_progress_store = {}
 embedding_progress_store = {}
 # Track background tasks for cancellation
 background_tasks_store = {}
+# Global store for cancellation flags
+embedding_cancellation_flags = {}
 
 def verify_api_key(x_api_key: str = Header(...)):
     if ADMIN_API_KEY and x_api_key != ADMIN_API_KEY:
@@ -377,8 +380,10 @@ async def reload_config(api_key: str = Depends(verify_api_key)):
 async def _generate_embeddings_only(ontology_name: str, collection_name: str = None):
     """Generate embeddings for an existing ontology without downloading."""
     
-    # Initialize progress tracking
+    # Initialize progress tracking and cancellation flag
     progress_key = f"{ontology_name}_embeddings"
+    cancellation_key = f"{ontology_name}_cancel"
+    
     embedding_progress_store[progress_key] = {
         "status": "starting",
         "progress_percentage": 0,
@@ -388,6 +393,7 @@ async def _generate_embeddings_only(ontology_name: str, collection_name: str = N
         "collection_name": collection_name,
         "embedding_stats": {}
     }
+    embedding_cancellation_flags[cancellation_key] = False
     
     def add_log(message: str, level: str = "INFO"):
         """Add a log entry to progress tracking."""
@@ -476,8 +482,13 @@ async def _generate_embeddings_only(ontology_name: str, collection_name: str = N
                     embedding_stats=extra_data
                 )
         
+        # Create cancellation check callback
+        def cancellation_check() -> bool:
+            """Check if the operation should be cancelled."""
+            return embedding_cancellation_flags.get(cancellation_key, False)
+        
         await ontology_manager.create_and_load_ontology_collection(
-            collection_name, parsed_terms, OPENAI_API_KEY, embedding_progress_callback
+            collection_name, parsed_terms, OPENAI_API_KEY, embedding_progress_callback, cancellation_check
         )
         
         update_progress("finalizing", 96, "Updating configuration...")
@@ -487,17 +498,26 @@ async def _generate_embeddings_only(ontology_name: str, collection_name: str = N
             ontology_name, collection_name, "embeddings_only"
         )
         
-        add_log(f"Embedding generation completed successfully. Collection: {collection_name}")
-        update_progress("completed", 100, "Embeddings generated successfully!")
+        # Check if cancelled
+        if embedding_cancellation_flags.get(cancellation_key, False):
+            add_log("Embedding generation was cancelled", "WARNING")
+            update_progress("cancelled", embedding_progress_store[progress_key].get("progress_percentage", 0), "Operation cancelled")
+        else:
+            add_log(f"Embedding generation completed successfully. Collection: {collection_name}")
+            update_progress("completed", 100, "Embeddings generated successfully!")
         
         return collection_name
         
     except Exception as exc:
         error_msg = f"Embedding generation failed: {str(exc)}"
         add_log(error_msg, "ERROR")
-        update_progress("failed", 0, error_msg)
+        update_progress("failed", embedding_progress_store[progress_key].get("progress_percentage", 0), error_msg)
         logger.exception("Embedding generation failed")
         raise exc
+    finally:
+        # Clean up cancellation flag
+        if cancellation_key in embedding_cancellation_flags:
+            del embedding_cancellation_flags[cancellation_key]
 
 
 @app.post("/admin/generate_embeddings")
@@ -553,22 +573,83 @@ async def get_embedding_progress(ontology_name: str, api_key: str = Depends(veri
 async def cancel_embedding_generation(ontology_name: str, api_key: str = Depends(verify_api_key)):
     """Cancel an ongoing embedding generation."""
     progress_key = f"{ontology_name}_embeddings"
+    cancellation_key = f"{ontology_name}_cancel"
+    
     if progress_key not in embedding_progress_store:
         raise HTTPException(status_code=404, detail="No active embedding generation found for this ontology")
     
+    # Set cancellation flag
+    embedding_cancellation_flags[cancellation_key] = True
+    
     # Mark as cancelled in progress store
     if progress_key in embedding_progress_store:
-        embedding_progress_store[progress_key]["status"] = "cancelled"
+        embedding_progress_store[progress_key]["status"] = "cancelling"
         embedding_progress_store[progress_key]["recent_logs"].append({
             "timestamp": datetime.utcnow().strftime("%H:%M:%S"),
-            "message": "Embedding generation cancelled by user",
+            "message": "Cancellation requested by user",
             "level": "WARNING"
         })
     
-    return {"status": "Embedding generation marked for cancellation"}
+    return {"status": "Cancellation requested. The operation will stop at the next safe point."}
 
 
 @app.get("/admin/embeddings_config")
 async def get_embeddings_config(api_key: str = Depends(verify_api_key)):
     """Get current embeddings configuration."""
     return EMBEDDINGS_CONFIG
+
+
+@app.post("/admin/test_embeddings_config")
+async def test_embeddings_config(api_key: str = Depends(verify_api_key)):
+    """Test embeddings configuration by embedding a sample text."""
+    try:
+        # Use a simple test string
+        test_text = "This is a test embedding for configuration validation."
+        
+        # Get model configuration
+        model_name = EMBEDDINGS_CONFIG.get("model", {}).get("name", "text-ada-002")
+        
+        # Test OpenAI API
+        client = openai.Client(api_key=OPENAI_API_KEY)
+        response = client.embeddings.create(
+            model=model_name,
+            input=test_text
+        )
+        
+        # Extract embedding info
+        embedding = response.data[0].embedding
+        dimensions = len(embedding)
+        
+        return {
+            "success": True,
+            "model": model_name,
+            "dimensions": dimensions,
+            "test_text": test_text,
+            "embedding_preview": embedding[:5] if embedding else [],  # First 5 dimensions
+            "message": f"Successfully created {dimensions}-dimensional embedding with {model_name}"
+        }
+        
+    except openai.AuthenticationError:
+        return {
+            "success": False,
+            "error": "authentication_error",
+            "message": "Invalid OpenAI API key. Please check your OPENAI_API_KEY environment variable."
+        }
+    except openai.NotFoundError:
+        return {
+            "success": False,
+            "error": "model_not_found",
+            "message": f"Model '{model_name}' not found. Please check the model name in embeddings configuration."
+        }
+    except openai.RateLimitError:
+        return {
+            "success": False,
+            "error": "rate_limit",
+            "message": "OpenAI API rate limit exceeded. Please try again later."
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": "unknown_error",
+            "message": f"Failed to test embeddings: {str(e)}"
+        }

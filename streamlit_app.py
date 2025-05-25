@@ -220,7 +220,7 @@ def show_embedding_progress(ont_name: str, api_key: str):
         return
     
     st.markdown("---")
-    st.markdown("**🤖 Embedding Progress:**")
+    st.markdown("### 🤖 Embedding Progress")
     
     # Get real-time progress from API
     try:
@@ -236,24 +236,53 @@ def show_embedding_progress(ont_name: str, api_key: str):
             percentage = progress_data.get("progress_percentage", 0)
             elapsed = progress_data.get("elapsed_seconds", 0)
             
-            # Status message
-            if status == "starting":
-                st.info(f"⏳ Starting embedding generation ({elapsed}s elapsed)...")
-            elif status == "initializing":
-                st.info(f"🔧 Initializing ({elapsed}s elapsed)...")
-            elif status == "processing_terms":
-                st.info(f"📝 Processing terms ({elapsed}s elapsed)...")
-            elif status == "embedding_generation" or status == "embedding_batch":
-                st.info(f"🧠 Generating embeddings ({elapsed}s elapsed)...")
-            elif status == "completed":
-                st.success(f"✅ Embedding generation completed! ({elapsed}s total)")
-            elif status == "failed":
-                st.error(f"❌ Embedding generation failed ({elapsed}s elapsed)")
-            elif status == "cancelled":
-                st.warning(f"⚠️ Embedding generation cancelled ({elapsed}s elapsed)")
+            # Create a container for status messages
+            status_container = st.container()
             
-            # Progress bar
-            st.progress(percentage / 100, text=f"Progress: {percentage}%")
+            # Status message with more detail
+            with status_container:
+                if status == "starting":
+                    st.info(f"⏳ **Starting embedding generation**\n\nInitializing process... ({elapsed}s elapsed)")
+                elif status == "initializing":
+                    st.info(f"🔧 **Initializing**\n\nSetting up Weaviate collection and loading configuration... ({elapsed}s elapsed)")
+                elif status == "loading":
+                    st.info(f"📂 **Loading ontology data**\n\nReading ontology file from disk... ({elapsed}s elapsed)")
+                elif status == "parsing":
+                    st.info(f"🔍 **Parsing ontology terms**\n\nExtracting term data for embedding... ({elapsed}s elapsed)")
+                elif status == "processing_terms":
+                    st.info(f"📝 **Processing terms**\n\nPreparing terms for vectorization... ({elapsed}s elapsed)")
+                elif status == "creating_collection":
+                    st.info(f"🗄️ **Creating collection**\n\nSetting up Weaviate collection with OpenAI vectorizer... ({elapsed}s elapsed)")
+                elif status == "embedding_generation" or status == "embedding_batch":
+                    st.info(f"🧠 **Generating embeddings**\n\nCreating vector representations for terms... ({elapsed}s elapsed)")
+                elif status == "retrying_batch":
+                    st.warning(f"🔄 **Retrying failed batch**\n\nRetrying terms that failed in previous attempt... ({elapsed}s elapsed)")
+                elif status == "rate_limited":
+                    st.warning(f"⏸️ **Rate limited**\n\nWaiting before retry due to API rate limits... ({elapsed}s elapsed)")
+                elif status == "finalizing":
+                    st.info(f"📊 **Finalizing**\n\nUpdating configuration and cleaning up... ({elapsed}s elapsed)")
+                elif status == "completed":
+                    st.success(f"✅ **Embedding generation completed!**\n\nSuccessfully generated embeddings in {elapsed}s")
+                elif status == "completed_with_errors":
+                    st.warning(f"⚠️ **Completed with errors**\n\nEmbedding generation finished with some errors ({elapsed}s elapsed)")
+                elif status == "completed_with_failures":
+                    st.warning(f"⚠️ **Completed with failures**\n\nSome terms failed to embed ({elapsed}s elapsed)")
+                elif status == "failed":
+                    st.error(f"❌ **Embedding generation failed**\n\nProcess encountered an error ({elapsed}s elapsed)")
+                elif status == "cancelled":
+                    st.warning(f"⚠️ **Embedding generation cancelled**\n\nProcess was cancelled by user ({elapsed}s elapsed)")
+                elif status == "cancelling":
+                    st.warning(f"🛑 **Cancelling...**\n\nWaiting for safe cancellation point... ({elapsed}s elapsed)")
+            
+            # Enhanced progress bar
+            progress_text = f"Progress: {percentage}%"
+            if status == "embedding_batch" and embedding_stats:
+                current_batch = embedding_stats.get("batches_completed", 0) + 1
+                total_batches = embedding_stats.get("total_batches", 0)
+                if total_batches > 0:
+                    progress_text = f"Progress: {percentage}% (Batch {current_batch}/{total_batches})"
+            
+            st.progress(percentage / 100, text=progress_text)
             
             # Embedding statistics
             embedding_stats = progress_data.get("embedding_stats", {})
@@ -272,47 +301,52 @@ def show_embedding_progress(ont_name: str, api_key: str):
                     else:
                         st.metric("Failed Terms", embedding_stats.get('failed_terms', 0))
             
-            # Recent logs
+            # Recent logs in an expandable section
             recent_logs = progress_data.get("recent_logs", [])
             if recent_logs:
-                st.markdown("#### 📋 Embedding Logs")
-                log_text = ""
-                for log in recent_logs:
-                    timestamp = log.get("timestamp", "")
-                    message = log.get("message", "")
-                    level = log.get("level", "INFO")
-                    
-                    # Color-code by level
-                    if level == "ERROR":
-                        log_text += f"🔴 [{timestamp}] {message}\n"
-                    elif level == "WARNING":
-                        log_text += f"🟡 [{timestamp}] {message}\n"
-                    else:
-                        log_text += f"⚪ [{timestamp}] {message}\n"
-                    
-                    st.text(log_text)
-            
-            # Cancel button for embeddings (only if not completed)
-            if status not in ["completed", "failed", "cancelled"]:
-                if st.button(f"❌ Cancel Embeddings", key=f"cancel_embedding_{ont_name}", type="secondary"):
-                    try:
-                        cancel_resp = requests.delete(
-                            f"{FASTAPI_URL}/admin/embedding_progress/{ont_name}",
-                            headers={"X-API-Key": api_key},
-                            timeout=5
-                        )
-                        if cancel_resp.ok:
-                            st.warning("⚠️ Embedding generation cancellation requested")
+                with st.expander("📋 Recent Activity Logs", expanded=(status == "failed")):
+                    for log in reversed(recent_logs):  # Show newest first
+                        timestamp = log.get("timestamp", "")
+                        message = log.get("message", "")
+                        level = log.get("level", "INFO")
+                        
+                        # Color-code by level
+                        if level == "ERROR":
+                            st.error(f"🔴 [{timestamp}] {message}")
+                        elif level == "WARNING":
+                            st.warning(f"🟡 [{timestamp}] {message}")
                         else:
-                            st.error("❌ Failed to cancel embedding generation")
-                    except Exception as e:
-                        st.error(f"❌ Error cancelling: {str(e)}")
+                            st.info(f"⚪ [{timestamp}] {message}")
             
-            # Clear button if completed/failed/cancelled
-            if status in ["completed", "failed", "cancelled"]:
-                if st.button(f"🔄 Clear Status", key=f"clear_embedding_{ont_name}"):
-                    del st.session_state[f"embedding_progress_{ont_name}"]
-                    st.rerun()
+            # Action buttons
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                # Cancel button for embeddings (only if not completed)
+                if status not in ["completed", "failed", "cancelled", "completed_with_errors", "completed_with_failures"]:
+                    if st.button(f"🛑 Cancel Generation", key=f"cancel_embedding_{ont_name}", type="secondary", use_container_width=True):
+                        with st.spinner("Sending cancellation request..."):
+                            try:
+                                cancel_resp = requests.delete(
+                                    f"{FASTAPI_URL}/admin/embedding_progress/{ont_name}",
+                                    headers={"X-API-Key": api_key},
+                                    timeout=5
+                                )
+                                if cancel_resp.ok:
+                                    st.success("✅ Cancellation requested. The process will stop at the next safe point.")
+                                    time.sleep(1)  # Brief pause to show message
+                                    st.rerun()
+                                else:
+                                    st.error("❌ Failed to cancel embedding generation")
+                            except Exception as e:
+                                st.error(f"❌ Error cancelling: {str(e)}")
+            
+            with col2:
+                # Clear button if completed/failed/cancelled
+                if status in ["completed", "failed", "cancelled", "completed_with_errors", "completed_with_failures"]:
+                    if st.button(f"✓ Clear Status", key=f"clear_embedding_{ont_name}", type="primary", use_container_width=True):
+                        del st.session_state[f"embedding_progress_{ont_name}"]
+                        st.rerun()
         
         else:
             # No active embedding generation found
@@ -860,10 +894,46 @@ if st.session_state.get('show_embeddings_config', False):
     with col2:
         if st.button("🔄 Test Configuration"):
             with st.spinner("Testing embedding configuration..."):
-                # TODO: Call API endpoint to test embedding with sample text
-                time.sleep(2)  # Simulate API call
-                st.success("✅ Configuration test completed!")
-                st.info("Sample text embedded successfully with current settings")
+                try:
+                    api_key = st.session_state.get('api_key', '')
+                    if not api_key:
+                        st.error("❌ API key required for testing")
+                    else:
+                        # Call API endpoint to test embedding
+                        resp = requests.post(
+                            f"{FASTAPI_URL}/admin/test_embeddings_config",
+                            headers={"X-API-Key": api_key},
+                            timeout=10
+                        )
+                        
+                        if resp.ok:
+                            data = resp.json()
+                            if data.get("success"):
+                                st.success("✅ Configuration test successful!")
+                                col_a, col_b = st.columns(2)
+                                with col_a:
+                                    st.metric("Model", data.get("model", "Unknown"))
+                                    st.metric("Dimensions", data.get("dimensions", 0))
+                                with col_b:
+                                    st.info(f"Test text: \"{data.get('test_text', '')}\"")
+                                    preview = data.get("embedding_preview", [])
+                                    if preview:
+                                        st.code(f"Embedding preview: {preview[:3]}...")
+                            else:
+                                error = data.get("error", "unknown")
+                                message = data.get("message", "Configuration test failed")
+                                if error == "authentication_error":
+                                    st.error(f"🔑 {message}")
+                                elif error == "model_not_found":
+                                    st.error(f"🔍 {message}")
+                                elif error == "rate_limit":
+                                    st.warning(f"⏱️ {message}")
+                                else:
+                                    st.error(f"❌ {message}")
+                        else:
+                            st.error(f"❌ API request failed: {resp.text}")
+                except Exception as e:
+                    st.error(f"❌ Error testing configuration: {str(e)}")
     
     with col3:
         if st.button("↩️ Reset to Defaults"):
@@ -1020,15 +1090,40 @@ if st.session_state.get('show_ontology_embedding_management', False):
     embeddings_config = load_embeddings_config()
     ontologies = config.get("ontologies", {})
     
-    # Display current embedding configuration
+    # Display current embedding configuration in a nice box
     model_name = embeddings_config.get("model", {}).get("name", "text-ada-002")
-    st.info(f"📊 **Current Embedding Model:** {model_name}")
     
-    # Link to embeddings configuration
-    if st.button("⚙️ Configure Embedding Settings", key="link_to_embed_config"):
-        st.session_state.show_embeddings_config = True
-        st.session_state.show_ontology_embedding_management = False
-        st.rerun()
+    with st.container():
+        col1, col2, col3 = st.columns([2, 1, 1])
+        with col1:
+            st.info(f"📊 **Current Configuration**\n\n"
+                    f"**Model:** {model_name}\n\n"
+                    f"**Batch Size:** {embeddings_config.get('processing', {}).get('batch_size', 100)}\n\n"
+                    f"**Fields:** {', '.join([k for k, v in embeddings_config.get('vectorize_fields', {}).items() if v])}")
+        with col2:
+            if st.button("🔍 Test Config", key="test_embed_config_quick", use_container_width=True, help="Test the current embedding configuration"):
+                with st.spinner("Testing..."):
+                    try:
+                        api_key = st.session_state.get('api_key', '')
+                        if api_key:
+                            resp = requests.post(
+                                f"{FASTAPI_URL}/admin/test_embeddings_config",
+                                headers={"X-API-Key": api_key},
+                                timeout=5
+                            )
+                            if resp.ok and resp.json().get("success"):
+                                st.success("✅ Config OK!")
+                            else:
+                                st.error("❌ Config issue")
+                        else:
+                            st.error("🔑 API key required")
+                    except:
+                        st.error("❌ Test failed")
+        with col3:
+            if st.button("⚙️ Configure", key="link_to_embed_config", use_container_width=True):
+                st.session_state.show_embeddings_config = True
+                st.session_state.show_ontology_embedding_management = False
+                st.rerun()
     
     st.markdown("---")
     

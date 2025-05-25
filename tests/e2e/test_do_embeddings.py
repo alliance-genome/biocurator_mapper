@@ -1,277 +1,274 @@
 """End-to-end test for DO (Disease Ontology) embeddings functionality."""
-from playwright.sync_api import sync_playwright
+import pytest
+from playwright.sync_api import Page, expect
 import time
-import sys
-import os
 
-def test_do_embeddings():
-    """Test complete flow: download DO ontology, then generate embeddings."""
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
+
+class TestDOEmbeddings:
+    """Test suite for DO embeddings workflow."""
+    
+    @pytest.fixture(autouse=True)
+    def setup(self, page: Page, base_url: str, admin_api_key: str):
+        """Setup for each test - navigate and authenticate."""
+        # Navigate to the app
+        page.goto(base_url)
+        page.wait_for_load_state("networkidle")
         
+        # Enter API key
+        api_input = page.locator('input[type="password"]')
+        api_input.fill(admin_api_key)
+        api_input.press("Enter")
+        
+        # Wait for authentication
+        page.wait_for_timeout(2000)
+        
+        # Verify admin features are available
+        expect(page.locator("text=🔧 Admin Panel")).to_be_visible(timeout=5000)
+        
+        yield page
+    
+    def test_complete_do_embeddings_generation(self, page: Page):
+        """Test complete flow: download DO ontology, then generate embeddings."""
+        # Step 1: Download DO ontology
+        self._download_do_ontology(page)
+        
+        # Step 2: Navigate to embeddings page
+        self._navigate_to_embeddings(page)
+        
+        # Step 3: Generate embeddings
+        self._generate_embeddings(page)
+        
+        # Step 4: Verify completion
+        self._verify_embeddings_completion(page)
+    
+    def _download_do_ontology(self, page: Page):
+        """Download the DO ontology."""
+        # Navigate to Ontology Updates
+        ontology_updates_btn = page.locator('button:has-text("📥 Ontology Updates")')
+        ontology_updates_btn.click()
+        page.wait_for_timeout(2000)
+        
+        # Look for DOID section - may need to expand
+        doid_header = page.locator('text=🧬 DOID - Disease Ontology').first
+        if doid_header.is_visible():
+            doid_header.click()
+            page.wait_for_timeout(1000)
+        
+        # Find and click the Update button for DOID
+        # Look for the update button within the DOID section
+        doid_section = page.locator('div:has(div:has-text("🧬 DOID - Disease Ontology"))')
+        update_btn = doid_section.locator('button:has-text("🔄 Update from Source")').first
+        
+        # Wait for button to be visible and click
+        expect(update_btn).to_be_visible(timeout=5000)
+        update_btn.click()
+        
+        # Wait for download to complete
+        # Look for completion indicators
+        completion_text = page.locator('text=/Download completed|Update completed|completed successfully|✅/i')
+        expect(completion_text).to_be_visible(timeout=60000)  # 60s timeout for download
+        
+        # Extra wait for UI to stabilize
+        page.wait_for_timeout(2000)
+    
+    def _navigate_to_embeddings(self, page: Page):
+        """Navigate to the embeddings management page."""
+        # Click on Manage Embeddings button
+        embeddings_btn = page.locator('button:has-text("🧠 Manage Embeddings")').first
+        embeddings_btn.click()
+        page.wait_for_timeout(2000)
+        
+        # Verify we're on the embeddings page
+        expect(page.locator("text=Ontology Embedding Management")).to_be_visible(timeout=5000)
+    
+    def _generate_embeddings(self, page: Page):
+        """Generate embeddings for DO."""
+        # Find DOID section on embeddings page - may need to expand
+        doid_embedding_section = page.locator('text=🧬 DOID - Disease Ontology').first
+        if doid_embedding_section.is_visible():
+            doid_embedding_section.click()
+            page.wait_for_timeout(1000)
+        
+        # Find Generate Embeddings button within DOID section
+        doid_section = page.locator('div:has-text("Ontology: DOID")')
+        generate_btn = doid_section.locator('button:has-text("🚀 Generate Embeddings")').first
+        
+        # Click the button
+        expect(generate_btn).to_be_visible(timeout=5000)
+        generate_btn.click()
+        
+        # Wait for confirmation dialog and confirm if present
         try:
-            # 1. Navigate and authenticate
-            print("1. Navigating to app and authenticating...")
-            page.goto("http://localhost:8501")
-            page.wait_for_load_state("networkidle")
-            
-            # Enter API key
-            page.fill('input[type="password"]', "1234")
-            page.press('input[type="password"]', "Enter")
-            time.sleep(2)
-            
-            # Check authentication
-            page_text = page.text_content("body")
-            if "🔧 Admin Panel" in page_text:
-                print("   ✅ Admin features unlocked!")
-            else:
-                print("   ❌ Failed to unlock admin features")
-                return False
-            
-            # 2. Download DO ontology first
-            print("\n2. Downloading DO ontology...")
-            
-            # Navigate to Ontology Updates
-            page.click('button:has-text("📥 Ontology Updates")')
+            confirm_btn = page.locator('button:has-text("Yes, Generate")').or_(page.locator('button:has-text("Confirm")')).first
+            if confirm_btn.is_visible(timeout=2000):
+                confirm_btn.click()
+        except:
+            pass  # No confirmation dialog
+    
+    def _verify_embeddings_completion(self, page: Page):
+        """Verify embeddings generation completes successfully."""
+        # Wait for progress indicators
+        expect(page.locator('text=/Starting embedding generation|Loading ontology data|Parsing ontology terms/i')).to_be_visible(timeout=10000)
+        
+        # Monitor for completion (up to 5 minutes for DO)
+        completion_text = page.locator('text=/Embedding generation completed|Embeddings generated successfully|✅.*completed/i')
+        expect(completion_text).to_be_visible(timeout=300000)  # 5 minute timeout
+        
+        # Verify no errors
+        error_text = page.locator('text=/Embedding generation failed|Error generating embeddings|Failed to generate/i')
+        expect(error_text).not_to_be_visible()
+        
+        # Look for statistics if available
+        stats_text = page.locator('text=/Generated embeddings for.*terms|processed.*terms/i')
+        if stats_text.is_visible():
+            print(f"Embedding stats: {stats_text.text_content()}")
+
+
+class TestDOEmbeddingsCancellation:
+    """Test cancellation of embeddings generation."""
+    
+    @pytest.fixture(autouse=True)
+    def setup(self, page: Page, base_url: str, admin_api_key: str):
+        """Setup for each test."""
+        # Navigate and authenticate
+        page.goto(base_url)
+        page.wait_for_load_state("networkidle")
+        
+        api_input = page.locator('input[type="password"]')
+        api_input.fill(admin_api_key)
+        api_input.press("Enter")
+        page.wait_for_timeout(2000)
+        
+        expect(page.locator("text=🔧 Admin Panel")).to_be_visible(timeout=5000)
+        
+        # Ensure DO is downloaded first
+        self._ensure_do_downloaded(page)
+        
+        yield page
+    
+    def _ensure_do_downloaded(self, page: Page):
+        """Ensure DO ontology is downloaded before testing embeddings."""
+        # Check if we need to download
+        page.locator('button:has-text("📥 Ontology Updates")').click()
+        page.wait_for_timeout(2000)
+        
+        # Look for existing version info
+        if page.locator('text=/Current Version.*DOID/i').is_visible():
+            # Already downloaded
+            return
+        
+        # Download if needed
+        doid_section = page.locator('div:has(div:has-text("🧬 DOID - Disease Ontology"))')
+        update_btn = doid_section.locator('button:has-text("🔄 Update from Source")').first
+        
+        if update_btn.is_visible():
+            update_btn.click()
+            completion_text = page.locator('text=/Download completed|Update completed|completed successfully/i')
+            expect(completion_text).to_be_visible(timeout=60000)
             page.wait_for_timeout(2000)
+    
+    def test_cancel_embeddings_generation(self, page: Page):
+        """Test cancelling embeddings generation."""
+        # Navigate to embeddings page
+        page.locator('button:has-text("🧠 Manage Embeddings")').first.click()
+        page.wait_for_timeout(2000)
+        
+        # Start embeddings generation
+        doid_section = page.locator('div:has-text("Ontology: DOID")')
+        generate_btn = doid_section.locator('button:has-text("🚀 Generate Embeddings")').first
+        generate_btn.click()
+        
+        # Confirm if needed
+        try:
+            confirm_btn = page.locator('button:has-text("Yes, Generate")').first
+            if confirm_btn.is_visible(timeout=2000):
+                confirm_btn.click()
+        except:
+            pass
+        
+        # Wait for generation to start
+        expect(page.locator('text=/Starting embedding generation|Processing/i')).to_be_visible(timeout=10000)
+        
+        # Click cancel button
+        cancel_btn = page.locator('button:has-text("❌ Cancel Embeddings")').first
+        expect(cancel_btn).to_be_visible(timeout=5000)
+        cancel_btn.click()
+        
+        # Verify cancellation
+        expect(page.locator('text=/Cancellation requested|cancelled|cancelling/i')).to_be_visible(timeout=10000)
+        
+        # Verify generation stops (no completion message)
+        page.wait_for_timeout(5000)
+        completion_text = page.locator('text=/Embeddings generated successfully/i')
+        expect(completion_text).not_to_be_visible()
+
+
+class TestEmbeddingsConfiguration:
+    """Test embeddings configuration interaction."""
+    
+    @pytest.fixture(autouse=True)
+    def setup(self, page: Page, base_url: str, admin_api_key: str):
+        """Setup for each test."""
+        page.goto(base_url)
+        page.wait_for_load_state("networkidle")
+        
+        api_input = page.locator('input[type="password"]')
+        api_input.fill(admin_api_key)
+        api_input.press("Enter")
+        page.wait_for_timeout(2000)
+        
+        expect(page.locator("text=🔧 Admin Panel")).to_be_visible(timeout=5000)
+        
+        yield page
+    
+    def test_modify_embeddings_configuration(self, page: Page):
+        """Test modifying embeddings configuration."""
+        # Navigate to Embeddings Config
+        page.locator('text=⚙️ Embeddings Config').click()
+        page.wait_for_timeout(2000)
+        
+        # Verify config page loaded
+        expect(page.locator("text=Embeddings Configuration")).to_be_visible()
+        
+        # Find model selection
+        model_select = page.locator('select').filter(has_text="text-ada-002").or_(
+            page.locator('div[data-baseweb="select"]').first
+        )
+        
+        # Change model if possible
+        if model_select.is_visible():
+            # Get current value
+            current_model = model_select.input_value() if hasattr(model_select, 'input_value') else "text-ada-002"
             
-            # Look for DOID section (might need to scroll or expand)
-            print("   Looking for DOID section...")
+            # Try to change to a different model
+            new_model = "text-embedding-3-small" if current_model != "text-embedding-3-small" else "text-ada-002"
             
-            # Try to find and click DOID expander
-            doid_header = page.locator('text=🧬 DOID - Disease Ontology').first
-            if doid_header.is_visible():
-                print("   Clicking DOID header to expand...")
-                doid_header.click()
-                time.sleep(1)
-            
-            # Find the Update button for DOID
-            # Based on debug, button index 2 is visible and should be for DOID
-            update_buttons = page.locator('button:has-text("🔄 Update from Source")')
-            
-            # Wait a bit for buttons to be ready
+            # For Streamlit selects, we may need to click and select
+            model_select.click()
+            page.locator(f'text={new_model}').click()
+            page.wait_for_timeout(1000)
+        
+        # Modify batch size
+        batch_input = page.locator('input[type="number"]').filter(has=page.locator('text=/batch.*size/i'))
+        if batch_input.is_visible():
+            batch_input.fill("50")
+        
+        # Save configuration
+        save_btn = page.locator('button:has-text("💾 Save Configuration")')
+        save_btn.click()
+        
+        # Verify save success
+        expect(page.locator('text=/Configuration saved|Successfully saved/i')).to_be_visible(timeout=5000)
+        
+        # Test Reset to Defaults
+        reset_btn = page.locator('button:has-text("🔄 Reset to Defaults")')
+        if reset_btn.is_visible():
+            reset_btn.click()
             page.wait_for_timeout(1000)
             
-            # Count total buttons
-            button_count = update_buttons.count()
-            print(f"   Found {button_count} Update buttons total")
-            
-            # Try to click the visible button (should be index 2 based on debug)
-            doid_update_clicked = False
-            for i in range(button_count):
-                btn = update_buttons.nth(i)
-                if btn.is_visible():
-                    print(f"   Found visible Update button at index {i}, clicking...")
-                    btn.click()
-                    doid_update_clicked = True
-                    break
-            
-            if not doid_update_clicked:
-                print("   ❌ Could not find visible DOID update button")
-                page.screenshot(path="no_visible_update_button.png")
-                return False
-            
-            # Wait for download to complete
-            print("   Waiting for download to complete...")
-            download_complete = False
-            
-            # First wait for any progress indication
-            time.sleep(2)
-            
-            for i in range(30):  # Wait up to 30 seconds
-                page_text = page.text_content("body")
-                
-                # Check for various completion indicators
-                if any(indicator in page_text for indicator in [
-                    "Download completed",
-                    "Update completed", 
-                    "completed successfully",
-                    "✅ Update completed",
-                    "100%"
-                ]):
-                    print(f"   ✅ DO download completed in {i+2}s")
-                    download_complete = True
-                    # Wait a bit more for UI to stabilize
-                    time.sleep(2)
-                    break
-                    
-                # Also check for download in progress
-                if "Downloading" in page_text or "Update Progress" in page_text:
-                    if i % 5 == 0:  # Print every 5 seconds
-                        print(f"   ... Download in progress at {i+2}s")
-                
-                # For Streamlit, sometimes we need to look for the success message
-                if "✅" in page_text and ("started" in page_text or "completed" in page_text):
-                    # Take a screenshot to see what's happening
-                    if i == 5:
-                        page.screenshot(path="do_download_progress.png")
-                
-                time.sleep(1)
-            
-            if not download_complete:
-                print("   ❌ Download did not complete in time")
-                page.screenshot(path="do_download_timeout.png")
-                return False
-            
-            # 3. Navigate to Embeddings page
-            print("\n3. Navigating to Embeddings page...")
-            
-            # Click on Manage Embeddings button
-            embeddings_btn = page.locator('button:has-text("🧠 Manage Embeddings")')
-            if embeddings_btn.count() > 0:
-                embeddings_btn.first.click()
-                time.sleep(2)
-            else:
-                print("   ❌ Could not find Embeddings button")
-                return False
-            
-            # Check if we're on embeddings page
-            page_text = page.text_content("body")
-            if "Ontology Embedding Management" not in page_text:
-                print("   ❌ Not on embeddings page")
-                page.screenshot(path="not_on_embeddings_page.png")
-                return False
-            
-            print("   ✅ On Embeddings Management page")
-            
-            # 4. Generate embeddings for DO
-            print("\n4. Generating embeddings for DO...")
-            
-            # Find DOID section on embeddings page
-            doid_embedding_section = page.locator('text=🧬 DOID - Disease Ontology').first
-            if doid_embedding_section.is_visible():
-                print("   Clicking DOID section to expand...")
-                doid_embedding_section.click()
-                time.sleep(1)
-            
-            # Find Generate Embeddings button
-            generate_btn = None
-            doid_section = page.locator('div:has-text("Ontology: DOID")')
-            if doid_section.count() > 0:
-                generate_btn = doid_section.locator('button:has-text("🚀 Generate Embeddings")').first
-                if generate_btn.is_visible():
-                    print("   Clicking Generate Embeddings button...")
-                    generate_btn.click()
-                else:
-                    print("   ❌ Generate Embeddings button not visible")
-                    page.screenshot(path="no_generate_button.png")
-                    return False
-            
-            # 5. Monitor embedding generation progress
-            print("\n5. Monitoring embedding generation...")
-            
-            embedding_started = False
-            embedding_completed = False
-            error_found = False
-            
-            # Monitor for up to 5 minutes (DO is smaller than GO)
-            for i in range(300):
-                page_text = page.text_content("body")
-                
-                # Check for start
-                if not embedding_started:
-                    if any(text in page_text for text in [
-                        "Starting embedding generation",
-                        "Loading ontology data",
-                        "Parsing ontology terms"
-                    ]):
-                        print(f"   ✅ Embedding generation started at {i}s")
-                        embedding_started = True
-                
-                # Check for progress indicators
-                if "Processing batch" in page_text:
-                    # Extract batch info if possible
-                    lines = page_text.split('\n')
-                    for line in lines:
-                        if "Processing batch" in line:
-                            print(f"   📊 {line.strip()}")
-                            break
-                
-                # Check for completion
-                if "Embedding generation completed" in page_text or "Embeddings generated successfully" in page_text:
-                    print(f"   ✅ Embedding generation completed at {i}s!")
-                    embedding_completed = True
-                    break
-                
-                # Check for errors
-                if any(error in page_text for error in [
-                    "Embedding generation failed",
-                    "Error generating embeddings",
-                    "Failed to generate embeddings"
-                ]):
-                    print(f"   ❌ Error detected at {i}s")
-                    error_found = True
-                    page.screenshot(path=f"embedding_error_{i}s.png")
-                    break
-                
-                # Progress update every 10 seconds
-                if i > 0 and i % 10 == 0:
-                    print(f"   ... {i}s elapsed")
-                
-                time.sleep(1)
-            
-            # Take final screenshot
-            page.screenshot(path="do_embeddings_final.png")
-            
-            # 6. Verify results
-            print("\n6. Final results:")
-            print(f"   Embedding started: {embedding_started}")
-            print(f"   Embedding completed: {embedding_completed}")
-            print(f"   Errors found: {error_found}")
-            
-            # Check final state
-            final_text = page.text_content("body")
-            
-            # Look for success indicators
-            if embedding_completed and not error_found:
-                print("\n✅ TEST PASSED: DO embeddings generated successfully!")
-                
-                # Check if we can see collection info
-                if "Collection:" in final_text:
-                    lines = final_text.split('\n')
-                    for line in lines:
-                        if "Collection:" in line:
-                            print(f"   {line.strip()}")
-                
-                return True
-            else:
-                print("\n❌ TEST FAILED: Embedding generation did not complete successfully")
-                
-                # Print recent logs if available
-                if "Recent Logs" in final_text:
-                    print("\n   Recent logs from page:")
-                    lines = final_text.split('\n')
-                    in_logs = False
-                    for line in lines:
-                        if "Recent Logs" in line:
-                            in_logs = True
-                        elif in_logs and line.strip():
-                            print(f"     {line.strip()}")
-                            if len([l for l in lines if l.strip()]) > 10:
-                                break
-                
-                return False
-            
-        except Exception as e:
-            print(f"\n❌ ERROR: {e}")
-            import traceback
-            traceback.print_exc()
-            try:
-                page.screenshot(path="error_exception.png")
-            except:
-                pass
-            return False
-        finally:
-            browser.close()
+            # Verify reset message
+            expect(page.locator('text=/Reset to defaults|Configuration reset/i')).to_be_visible(timeout=5000)
 
 
 if __name__ == "__main__":
-    # Make sure we have the OpenAI key for embeddings
-    if not os.getenv("OPENAI_API_KEY"):
-        print("WARNING: OPENAI_API_KEY not set in environment!")
-        print("Embeddings will fail without it.")
-        # Continue anyway to see what happens
-    
-    success = test_do_embeddings()
-    sys.exit(0 if success else 1)
+    pytest.main([__file__, "-v"])

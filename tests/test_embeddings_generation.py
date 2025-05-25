@@ -381,60 +381,78 @@ async def test_searchable_text_configuration():
         {
             "config": {
                 "vectorize_fields": {"name": True, "definition": True, "synonyms": False},
-                "preprocessing": {"lowercase": False, "remove_punctuation": False}
+                "preprocessing": {"lowercase": False, "remove_punctuation": False, "combine_fields_separator": " | "}
             },
             "term_data": {
                 "name": "Disease Name",
                 "definition": "A disease definition.",
-                "exact_synonyms": ["Synonym1", "Synonym2"]
+                "all_synonyms": ["Synonym1", "Synonym2"]
             },
             "expected": "Disease Name | A disease definition."
         },
         {
             "config": {
                 "vectorize_fields": {"name": True, "definition": False, "synonyms": True},
-                "preprocessing": {"lowercase": True, "remove_punctuation": False}
+                "preprocessing": {"lowercase": True, "remove_punctuation": False, "combine_fields_separator": " | "}
             },
             "term_data": {
                 "name": "Disease Name",
                 "definition": "A disease definition.",
-                "exact_synonyms": ["Synonym1", "Synonym2"]
+                "all_synonyms": ["Synonym1", "Synonym2"]
             },
             "expected": "disease name | synonym1 | synonym2"
         },
         {
             "config": {
                 "vectorize_fields": {"name": True, "definition": True, "synonyms": True},
-                "preprocessing": {"lowercase": False, "remove_punctuation": True, "combine_fields_separator": " "}
+                "preprocessing": {"lowercase": True, "remove_punctuation": True, "combine_fields_separator": " "}
             },
             "term_data": {
-                "name": "Disease Name!",
+                "name": "Disease-Name!",
                 "definition": "A disease definition.",
-                "exact_synonyms": ["Synonym1!", "Synonym2?"]
+                "all_synonyms": ["Synonym-1", "Synonym-2"]
             },
-            "expected": "Disease Name A disease definition Synonym1 Synonym2"
+            "expected": "diseasename a disease definition synonym1 synonym2"
         }
     ]
     
     for test_case in test_cases:
-        with patch.dict(EMBEDDINGS_CONFIG, test_case["config"]):
+        # Mock the config
+        with patch('app.ontology_manager.EMBEDDINGS_CONFIG', test_case["config"]):
             result = manager._build_searchable_text(test_case["term_data"])
-            assert result == test_case["expected"], f"Expected '{test_case['expected']}', got '{result}'"
+            assert result == test_case["expected"], f"Expected '{test_case['expected']}' but got '{result}'"
 
 
 @pytest.mark.asyncio
-async def test_weaviate_error_handling():
-    """Test handling of Weaviate-specific errors."""
-    from weaviate.exceptions import WeaviateBaseError
-    
+async def test_retry_logic_with_rate_limit():
+    """Test retry logic when encountering rate limit errors."""
+    from openai import RateLimitError
     manager = OntologyManager()
     
-    # Mock Weaviate client that raises exception
+    # Mock Weaviate client
     mock_client = MagicMock()
-    mock_client.collections.delete.side_effect = WeaviateBaseError("Collection error")
+    mock_collection = MagicMock()
+    mock_batch = MagicMock()
+    
+    # Track retry attempts
+    add_object_call_count = 0
+    
+    def mock_add_object(obj):
+        nonlocal add_object_call_count
+        add_object_call_count += 1
+        if add_object_call_count <= 2:
+            # Fail first two attempts with rate limit
+            raise RateLimitError("Rate limit exceeded", response=None, body=None)
+        # Success on third attempt
+        return True
+    
+    mock_batch.add_object = mock_add_object
+    mock_collection.batch.dynamic.return_value.__enter__.return_value = mock_batch
+    mock_client.collections.get.return_value = mock_collection
+    mock_client.collections.create = MagicMock()
     mock_client.is_ready.return_value = True
     
-    # Track progress
+    # Progress tracking
     progress_updates = []
     
     def progress_callback(status, percentage, message, extra_data):
@@ -444,13 +462,231 @@ async def test_weaviate_error_handling():
         })
     
     with patch.object(manager, 'get_weaviate_client', return_value=mock_client):
-        with pytest.raises(WeaviateBaseError):
+        with patch('app.ontology_manager.EMBEDDINGS_CONFIG', {
+            "processing": {"batch_size": 1, "max_retries": 3, "retry_failed": True},
+            "performance": {"rate_limit_delay": 0.01},
+            "vectorize_fields": {"name": True, "definition": True, "synonyms": True},
+            "preprocessing": {"lowercase": False, "remove_punctuation": False}
+        }):
+            # Test data
+            test_terms = [{"id": "GO:0001", "name": "test term 1", "definition": "test def 1"}]
+            
             await manager.create_and_load_ontology_collection(
                 "test_collection",
-                [],
+                test_terms,
                 "test_api_key",
                 progress_callback
             )
+            
+            # Verify retries happened
+            assert add_object_call_count == 3  # Failed twice, succeeded on third
+            
+            # Check for rate limit status in progress updates
+            rate_limit_updates = [u for u in progress_updates if u["status"] == "rate_limited"]
+            assert len(rate_limit_updates) >= 1
+
+
+@pytest.mark.asyncio
+async def test_batch_partial_failure_handling():
+    """Test handling of partial batch failures."""
+    manager = OntologyManager()
     
-    # Verify error was captured in progress
-    assert any("error" in update["status"] for update in progress_updates)
+    # Mock Weaviate client
+    mock_client = MagicMock()
+    mock_collection = MagicMock()
+    mock_batch = MagicMock()
+    
+    # Track which terms get added
+    successful_terms = []
+    
+    def mock_add_object(obj):
+        # Fail for terms with id ending in 2
+        if obj["term_id"].endswith("2"):
+            raise Exception("Failed to add term")
+        successful_terms.append(obj["term_id"])
+        return True
+    
+    mock_batch.add_object = mock_add_object
+    mock_collection.batch.dynamic.return_value.__enter__.return_value = mock_batch
+    mock_client.collections.get.return_value = mock_collection
+    mock_client.collections.create = MagicMock()
+    mock_client.is_ready.return_value = True
+    
+    # Track stats
+    final_stats = {}
+    
+    def progress_callback(status, percentage, message, extra_data):
+        if extra_data:
+            final_stats.update(extra_data)
+    
+    with patch.object(manager, 'get_weaviate_client', return_value=mock_client):
+        with patch('app.ontology_manager.EMBEDDINGS_CONFIG', {
+            "processing": {"batch_size": 5, "max_retries": 0, "retry_failed": False},
+            "performance": {"rate_limit_delay": 0},
+            "vectorize_fields": {"name": True, "definition": True, "synonyms": True},
+            "preprocessing": {"lowercase": False, "remove_punctuation": False}
+        }):
+            # Test data with mix of success/failure
+            test_terms = [
+                {"id": "GO:0001", "name": "test term 1", "definition": "test def 1"},
+                {"id": "GO:0002", "name": "test term 2", "definition": "test def 2"},  # Will fail
+                {"id": "GO:0003", "name": "test term 3", "definition": "test def 3"},
+                {"id": "GO:0012", "name": "test term 12", "definition": "test def 12"},  # Will fail
+                {"id": "GO:0004", "name": "test term 4", "definition": "test def 4"}
+            ]
+            
+            await manager.create_and_load_ontology_collection(
+                "test_collection",
+                test_terms,
+                "test_api_key",
+                progress_callback
+            )
+            
+            # Verify correct terms succeeded
+            assert "GO:0001" in successful_terms
+            assert "GO:0002" not in successful_terms
+            assert "GO:0003" in successful_terms
+            assert "GO:0012" not in successful_terms
+            assert "GO:0004" in successful_terms
+            
+            # Check final stats
+            assert final_stats["processed_terms"] == 3
+            assert final_stats["failed_terms"] == 2
+            assert final_stats["total_terms"] == 5
+
+
+@pytest.mark.asyncio
+async def test_cancellation_during_embedding():
+    """Test cancellation mechanism during embedding generation."""
+    manager = OntologyManager()
+    
+    # Mock Weaviate client
+    mock_client = MagicMock()
+    mock_collection = MagicMock()
+    mock_batch = MagicMock()
+    
+    # Track progress
+    progress_updates = []
+    cancelled = False
+    terms_processed = 0
+    
+    def mock_add_object(obj):
+        nonlocal terms_processed
+        terms_processed += 1
+        # Simulate slow processing
+        time.sleep(0.01)
+        return True
+    
+    mock_batch.add_object = mock_add_object
+    mock_collection.batch.dynamic.return_value.__enter__.return_value = mock_batch
+    mock_client.collections.get.return_value = mock_collection
+    mock_client.collections.create = MagicMock()
+    mock_client.is_ready.return_value = True
+    
+    def progress_callback(status, percentage, message, extra_data):
+        progress_updates.append({
+            "status": status,
+            "percentage": percentage,
+            "message": message
+        })
+    
+    def cancellation_check():
+        nonlocal cancelled
+        # Cancel after processing 3 terms
+        if terms_processed >= 3:
+            cancelled = True
+        return cancelled
+    
+    with patch.object(manager, 'get_weaviate_client', return_value=mock_client):
+        with patch('app.ontology_manager.EMBEDDINGS_CONFIG', {
+            "processing": {"batch_size": 2, "max_retries": 1, "retry_failed": True},
+            "performance": {"rate_limit_delay": 0},
+            "vectorize_fields": {"name": True, "definition": True, "synonyms": True},
+            "preprocessing": {"lowercase": False, "remove_punctuation": False}
+        }):
+            # Test data with many terms
+            test_terms = [
+                {"id": f"GO:{i:04d}", "name": f"test term {i}", "definition": f"test def {i}"}
+                for i in range(1, 11)  # 10 terms
+            ]
+            
+            await manager.create_and_load_ontology_collection(
+                "test_collection",
+                test_terms,
+                "test_api_key",
+                progress_callback,
+                cancellation_check
+            )
+            
+            # Verify cancellation happened
+            assert cancelled
+            assert terms_processed < 10  # Should not process all terms
+            
+            # Check for cancelled status in progress
+            cancelled_updates = [u for u in progress_updates if u["status"] == "cancelled"]
+            assert len(cancelled_updates) > 0
+            assert "cancelled by user" in cancelled_updates[0]["message"].lower()
+
+
+@pytest.mark.asyncio
+async def test_background_task_error_handling():
+    """Test error handling in the background embedding task."""
+    from fastapi import HTTPException
+    
+    # Test file not found
+    with patch('os.path.exists', return_value=False):
+        embedding_progress_store.clear()
+        
+        with pytest.raises(HTTPException) as exc_info:
+            await _generate_embeddings_only("DOID", "test_collection")
+        
+        assert exc_info.value.status_code == 404
+        assert "DOID_embeddings" in embedding_progress_store
+        assert embedding_progress_store["DOID_embeddings"]["status"] == "failed"
+
+
+@pytest.mark.asyncio
+async def test_embeddings_config_applied():
+    """Test that embeddings configuration is properly applied."""
+    manager = OntologyManager()
+    
+    # Mock the _build_searchable_text to verify it's called with correct config
+    build_text_calls = []
+    
+    def mock_build_searchable_text(term_data):
+        # Capture the current config state
+        build_text_calls.append({
+            "vectorize_fields": EMBEDDINGS_CONFIG.get("vectorize_fields", {}),
+            "preprocessing": EMBEDDINGS_CONFIG.get("preprocessing", {})
+        })
+        return "test searchable text"
+    
+    with patch.object(manager, '_build_searchable_text', side_effect=mock_build_searchable_text):
+        # Create mock client
+        mock_client = MagicMock()
+        mock_collection = MagicMock()
+        mock_batch = MagicMock()
+        mock_batch.add_object = MagicMock()
+        mock_collection.batch.dynamic.return_value.__enter__.return_value = mock_batch
+        mock_client.collections.get.return_value = mock_collection
+        mock_client.collections.create = MagicMock()
+        mock_client.is_ready.return_value = True
+        
+        with patch.object(manager, 'get_weaviate_client', return_value=mock_client):
+            with patch('app.ontology_manager.EMBEDDINGS_CONFIG', {
+                "vectorize_fields": {"name": False, "definition": True, "synonyms": False},
+                "preprocessing": {"lowercase": True, "remove_punctuation": True},
+                "processing": {"batch_size": 1}
+            }):
+                test_terms = [{"id": "GO:0001", "name": "test", "definition": "test def"}]
+                
+                await manager.create_and_load_ontology_collection(
+                    "test_collection",
+                    test_terms,
+                    "test_api_key"
+                )
+                
+                # Verify config was used
+                assert len(build_text_calls) == 1
+                assert build_text_calls[0]["vectorize_fields"] == {"name": False, "definition": True, "synonyms": False}
+                assert build_text_calls[0]["preprocessing"] == {"lowercase": True, "remove_punctuation": True}

@@ -343,7 +343,13 @@ class OntologyManager:
                     batch_failed_terms = []
                     
                     with collection.batch.dynamic() as batch:
-                        for term in batch_terms:
+                        for idx, term in enumerate(batch_terms):
+                            # Check for cancellation every 10 terms within a batch
+                            if idx > 0 and idx % 10 == 0 and cancellation_check and cancellation_check():
+                                # Cancel the batch gracefully
+                                update_progress("cancelled", progress_percentage, "Operation cancelled by user during term processing")
+                                return
+                            
                             try:
                                 batch.add_object({
                                     "term_id": term["term_id"],
@@ -368,6 +374,11 @@ class OntologyManager:
                         batch_success = True
                         embedding_stats["batches_completed"] += 1
                     else:
+                        # Check for cancellation before retry
+                        if cancellation_check and cancellation_check():
+                            update_progress("cancelled", progress_percentage, "Operation cancelled by user before retry")
+                            return
+                        
                         # Retry only failed terms
                         if retry_failed and batch_retry_count < max_retries:
                             batch_terms = batch_failed_terms
@@ -391,6 +402,12 @@ class OntologyManager:
                 except (RateLimitError, APIError) as e:
                     # Handle OpenAI API errors
                     self.logger.error(f"OpenAI API error in batch {batch_num}: {e}")
+                    
+                    # Check for cancellation before retry
+                    if cancellation_check and cancellation_check():
+                        update_progress("cancelled", progress_percentage, "Operation cancelled by user during rate limit handling")
+                        return
+                    
                     if batch_retry_count < max_retries:
                         batch_retry_count += 1
                         embedding_stats["retry_count"] += 1
@@ -400,7 +417,14 @@ class OntologyManager:
                             progress_percentage,
                             f"Rate limited on batch {batch_num}, waiting {wait_time:.1f}s before retry..."
                         )
-                        await asyncio.sleep(wait_time)
+                        
+                        # Check for cancellation during wait with 1-second intervals
+                        for _ in range(int(wait_time)):
+                            if cancellation_check and cancellation_check():
+                                update_progress("cancelled", progress_percentage, "Operation cancelled by user during rate limit wait")
+                                return
+                            await asyncio.sleep(1)
+                        await asyncio.sleep(wait_time % 1)  # Sleep for remaining fraction
                     else:
                         failed_batches.append((batch_num, str(e)))
                         update_progress(
@@ -413,6 +437,12 @@ class OntologyManager:
                 except WeaviateBaseError as e:
                     # Handle Weaviate errors
                     self.logger.error(f"Weaviate error in batch {batch_num}: {e}")
+                    
+                    # Check for cancellation before retry
+                    if cancellation_check and cancellation_check():
+                        update_progress("cancelled", progress_percentage, "Operation cancelled by user during Weaviate error handling")
+                        return
+                    
                     if batch_retry_count < max_retries:
                         batch_retry_count += 1
                         embedding_stats["retry_count"] += 1

@@ -35,7 +35,6 @@ services:
       - ONTOLOGY_CONFIG_PATH=/app/ontology_config.yaml
     volumes:
       - app_config_data:/app/data
-      - ./ontology_versions.json:/app/ontology_versions.json
     depends_on:
       weaviate:
         condition: service_healthy

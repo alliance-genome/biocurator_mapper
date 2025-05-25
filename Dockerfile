@@ -35,7 +35,17 @@ RUN mkdir -p /app/data
 
 # Create non-root user for security
 RUN groupadd -r appuser && useradd -r -g appuser appuser
-RUN chown -R appuser:appuser /app
+
+# Create empty version files with proper permissions
+RUN touch /app/ontology_versions.json && \
+    touch /app/embeddings_config.yaml || true
+
+# Set ownership and permissions
+RUN chown -R appuser:appuser /app && \
+    chmod -R 755 /app && \
+    chmod 664 /app/ontology_versions.json && \
+    chmod 664 /app/embeddings_config.yaml || true
+
 USER appuser
 
 # Health check

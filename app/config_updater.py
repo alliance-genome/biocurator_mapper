@@ -39,7 +39,40 @@ class ConfigUpdater:
         with tempfile.NamedTemporaryFile("w", dir=dir_name, delete=False) as tf:
             json.dump(config, tf, indent=2)
             temp_name = tf.name
-        os.replace(temp_name, self.config_path)
+        
+        # Try atomic replace first
+        try:
+            os.replace(temp_name, self.config_path)
+        except OSError as e:
+            # If atomic replace fails (common in Docker with mounted volumes),
+            # fall back to copy and delete
+            import shutil
+            try:
+                # Make a backup first
+                if os.path.exists(self.config_path):
+                    backup_path = f"{self.config_path}.backup"
+                    shutil.copy2(self.config_path, backup_path)
+                
+                # Copy the temp file to the target
+                shutil.copy2(temp_name, self.config_path)
+                
+                # Remove the temp file
+                try:
+                    os.unlink(temp_name)
+                except OSError:
+                    pass  # Ignore errors removing temp file
+                    
+                # Remove backup if successful
+                if os.path.exists(backup_path):
+                    try:
+                        os.unlink(backup_path)
+                    except OSError:
+                        pass
+            except Exception:
+                # If anything goes wrong, try to restore backup
+                if os.path.exists(backup_path):
+                    shutil.copy2(backup_path, self.config_path)
+                raise
 
     def get_current_ontology_version(self, ontology_name: str) -> Optional[str]:
         config = self._read_config()

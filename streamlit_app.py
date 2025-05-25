@@ -108,6 +108,76 @@ def update_version_metadata(ont_name: str, filename: str, size_mb: float):
         st.error(f"Failed to update version metadata: {e}")
 
 
+def show_update_progress(ont_name: str, api_key: str):
+    """Display ontology update progress."""
+    st.markdown("---")
+    st.markdown("**📥 Update Progress:**")
+    
+    try:
+        resp = requests.get(
+            f"{FASTAPI_URL}/admin/update_progress/{ont_name}",
+            headers={"X-API-Key": api_key},
+            timeout=5
+        )
+        
+        if resp.ok:
+            progress_data = resp.json()
+            status = progress_data.get("status", "unknown")
+            percentage = progress_data.get("progress_percentage", 0)
+            elapsed = progress_data.get("elapsed_seconds", 0)
+            
+            # Status message
+            if status == "downloading":
+                st.info(f"⬇️ Downloading ontology ({elapsed}s elapsed)...")
+            elif status == "parsing":
+                st.info(f"📝 Parsing ontology data ({elapsed}s elapsed)...")
+            elif status == "version_check":
+                st.info(f"🔍 Checking version ({elapsed}s elapsed)...")
+            elif status == "embedding":
+                st.info(f"🧠 Generating initial embeddings ({elapsed}s elapsed)...")
+            elif status == "completed":
+                st.success(f"✅ Update completed! ({elapsed}s total)")
+            elif status == "failed":
+                st.error(f"❌ Update failed ({elapsed}s elapsed)")
+            
+            # Progress bar
+            st.progress(percentage / 100, text=f"Progress: {percentage}%")
+            
+            # Recent logs (no expander since we're already inside one)
+            recent_logs = progress_data.get("recent_logs", [])
+            if recent_logs:
+                st.markdown("**📋 Recent Logs:**")
+                log_text = ""
+                for log in recent_logs[-5:]:  # Show last 5 logs
+                    timestamp = log.get("timestamp", "")
+                    message = log.get("message", "")
+                    level = log.get("level", "INFO")
+                    
+                    if level == "ERROR":
+                        log_text += f"🔴 [{timestamp}] {message}\n"
+                    elif level == "WARNING":
+                        log_text += f"🟡 [{timestamp}] {message}\n"
+                    else:
+                        log_text += f"⚪ [{timestamp}] {message}\n"
+                
+                st.text(log_text)
+            
+            # Clear button if completed/failed
+            if status in ["completed", "failed"]:
+                if st.button(f"🔄 Clear Status", key=f"clear_update_status_{ont_name}"):
+                    del st.session_state[f"update_progress_{ont_name}"]
+                    st.rerun()
+            else:
+                # Refresh button for ongoing updates
+                if st.button(f"🔄 Refresh", key=f"refresh_update_{ont_name}"):
+                    st.rerun()
+        else:
+            st.warning("⚠️ No active update found")
+            del st.session_state[f"update_progress_{ont_name}"]
+    
+    except Exception as e:
+        st.error(f"❌ Error checking progress: {str(e)}")
+
 def get_download_history(ont_name: str) -> list:
     """Get download history for an ontology."""
     metadata_file = Path("ontology_versions.json")
@@ -817,288 +887,240 @@ if st.session_state.get('show_embeddings_config', False):
     
     st.markdown("---")
 
-# Ontology Management Page
-if st.session_state.get('show_ontology_management', False):
+# Ontology Update Management Page
+if st.session_state.get('show_ontology_update_management', False):
     st.markdown("---")
-    st.markdown("## 🔄 Ontology Management")
+    st.markdown("## 📥 Ontology Update Management")
+    st.markdown("Manage ontology downloads, updates, and version control")
     
     # Load ontology configuration
     config = load_ontology_config()
-    embeddings_config = load_embeddings_config()
     ontologies = config.get("ontologies", {})
     
     if not ontologies:
         st.warning("⚠️ No ontologies configured. Please check your ontology configuration.")
-        st.markdown("---")
     else:
-        st.markdown("### 📊 Ontology Status")
+        # Filter enabled ontologies
+        enabled_ontologies_list = [(name, conf) for name, conf in ontologies.items() if conf.get("enabled", True)]
         
-        # Use session state to control view instead of tabs to avoid jumping
-        if 'ontology_view' not in st.session_state:
-            st.session_state.ontology_view = "overview"
-        
-        # Check if we should switch to detailed view automatically
-        if any(st.session_state.get(f"confirm_update_{ont}", False) or 
-               st.session_state.get(f"download_result_{ont}", False) or
-               st.session_state.get(f"embedding_progress_{ont}", False)
-               for ont in ontologies.keys()):
-            st.session_state.ontology_view = "detailed"
-        
-        # View selector buttons
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("🏠 Overview", type="primary" if st.session_state.ontology_view == "overview" else "secondary"):
-                st.session_state.ontology_view = "overview"
-                st.rerun()
-        with col2:
-            if st.button("📋 Detailed Actions", type="primary" if st.session_state.ontology_view == "detailed" else "secondary"):
-                st.session_state.ontology_view = "detailed"
-                st.rerun()
-        
-        st.markdown("---")
-        
-        if st.session_state.ontology_view == "overview":
-            # Overview table
-            st.markdown("**Current Ontology Status:**")
+        if not enabled_ontologies_list:
+            st.info("No enabled ontologies found.")
+        else:
+            st.markdown("### 📊 Available Ontologies")
             
-            # Create a summary table
-            overview_data = []
-            for ont_name, ont_config in ontologies.items():
-                if ont_config.get("enabled", True):
-                    overview_data.append({
-                        "Ontology": ont_name,
-                        "Name": ont_config.get("name", "Unknown"),
-                        "Status": "✅ Enabled",
-                        "Source": ont_config.get("default_source_url", "Not configured")[:50] + "..." if len(ont_config.get("default_source_url", "")) > 50 else ont_config.get("default_source_url", "Not configured")
-                    })
-            
-            if overview_data:
-                import pandas as pd
-                df = pd.DataFrame(overview_data)
-                st.dataframe(df, use_container_width=True)
-            else:
-                st.info("No enabled ontologies found.")
-        
-        elif st.session_state.ontology_view == "detailed":
-            # Detailed actions for each ontology
-            for ont_name, ont_config in ontologies.items():
-                if not ont_config.get("enabled", True):
-                    continue
-                    
-                # Check if this ontology has active operations to auto-expand
-                has_active_progress = (f"download_result_{ont_name}" in st.session_state or 
-                                     f"embedding_progress_{ont_name}" in st.session_state or
-                                     st.session_state.get(f"confirm_update_{ont_name}", False))
+            # Create columns for better layout
+            for ont_name, ont_config in enabled_ontologies_list:
+                # Check if this ontology has active update progress
+                has_active_update = f"update_progress_{ont_name}" in st.session_state
                 
-                with st.expander(f"🧬 {ont_name} - {ont_config.get('name', 'Unknown')}", expanded=has_active_progress):
-                    col1, col2 = st.columns([2, 1])
+                with st.expander(f"🧬 {ont_name} - {ont_config.get('name', 'Unknown')}", expanded=has_active_update):
+                    col1, col2 = st.columns([3, 1])
                     
                     with col1:
                         st.markdown(f"**Ontology:** {ont_name}")
                         st.markdown(f"**Full Name:** {ont_config.get('name', 'Unknown')}")
                         
+                        # Source URL input
                         default_url = ont_config.get("default_source_url", "")
                         source_url = st.text_input(
                             "Source URL", 
                             value=default_url, 
-                            key=f"url_{ont_name}",
-                            help="URL to download the ontology data"
+                            key=f"update_url_{ont_name}",
+                            help="URL to download the ontology data from"
                         )
-                        
-                        # Embedding model info
-                        model_name = embeddings_config.get("model", {}).get("name", "text-ada-002")
-                        st.info(f"🧠 **Embedding Model:** {model_name}")
                         
                         # Show download history
                         download_history = get_download_history(ont_name)
                         if download_history:
-                            history_col1, history_col2 = st.columns([3, 1])
-                            with history_col1:
-                                st.markdown("#### 📜 Download History")
-                            with history_col2:
-                                if st.button("🗑️ Clear", key=f"clear_history_{ont_name}", help="Clear download history"):
-                                    clear_download_history(ont_name)
-                                    st.rerun()
-                            
-                            for version in download_history[-3:]:  # Show last 3
+                            st.markdown("#### 📜 Version History")
+                            history_df_data = []
+                            for version in download_history[-5:]:  # Show last 5
                                 timestamp = datetime.fromisoformat(version['timestamp'])
-                                st.text(f"📅 {timestamp.strftime('%Y-%m-%d %H:%M:%S')}: "
-                                      f"{version['filename']} ({version['size_mb']:.2f} MB)")
-                        
-                        # Show any download result
-                        if f"download_result_{ont_name}" in st.session_state:
-                            st.markdown("---")
-                            st.markdown("**📥 Download Status:**")
-                            result = st.session_state[f"download_result_{ont_name}"]
-                            if result["success"]:
-                                st.success(f"✅ {result['message']}")
-                                st.info(f"File saved to: `{result['file_path']}`")
-                            else:
-                                st.error(f"❌ {result['message']}")
+                                history_df_data.append({
+                                    "Date": timestamp.strftime('%Y-%m-%d %H:%M'),
+                                    "File": version['filename'],
+                                    "Size (MB)": f"{version['size_mb']:.2f}"
+                                })
+                            if history_df_data:
+                                import pandas as pd
+                                st.dataframe(pd.DataFrame(history_df_data), use_container_width=True, hide_index=True)
                             
-                            # Clear the result after showing
-                            if st.button("🔄 Clear Status", key=f"clear_result_{ont_name}"):
-                                del st.session_state[f"download_result_{ont_name}"]
+                            if st.button("🗑️ Clear History", key=f"clear_update_history_{ont_name}"):
+                                clear_download_history(ont_name)
+                                st.success("History cleared")
                                 st.rerun()
-                        
-                        # Show update progress if available
-                        if f"update_progress_{ont_name}" in st.session_state:
-                            st.markdown("---")
-                            st.markdown("**📥 Update Progress:**")
-                            
-                            # Poll the backend for progress
-                            try:
-                                api_key = st.session_state.get('api_key', '')
-                                resp = requests.get(
-                                    f"{FASTAPI_URL}/admin/update_progress/{ont_name}",
-                                    headers={"X-API-Key": api_key},
-                                    timeout=5
-                                )
-                                
-                                if resp.ok:
-                                    progress_data = resp.json()
-                                    status = progress_data.get("status", "unknown")
-                                    percentage = progress_data.get("progress_percentage", 0)
-                                    
-                                    # Display progress bar
-                                    st.progress(percentage / 100, text=f"Status: {status} - {percentage}%")
-                                    
-                                    # Display recent logs
-                                    recent_logs = progress_data.get("recent_logs", [])
-                                    if recent_logs:
-                                        log_text = ""
-                                        for log in recent_logs[-5:]:  # Show last 5 logs
-                                            log_text += f"{log.get('timestamp', '')} - {log.get('message', '')}\n"
-                                        st.code(log_text)
-                                    
-                                    # If completed, clear the progress state
-                                    if status in ["completed", "failed", "cancelled"]:
-                                        if st.button(f"🔄 Clear Status", key=f"clear_update_{ont_name}"):
-                                            del st.session_state[f"update_progress_{ont_name}"]
-                                            st.rerun()
-                                    else:
-                                        # Add refresh button
-                                        if st.button(f"🔄 Refresh", key=f"refresh_update_{ont_name}"):
-                                            st.rerun()
-                                else:
-                                    st.error(f"Failed to get update progress: {resp.text}")
-                            except Exception as e:
-                                st.error(f"Error fetching update progress: {str(e)}")
                     
                     with col2:
                         st.markdown("**Actions:**")
                         
-                        # Update Ontology Button
-                        if st.button(f"📥 Update Data", key=f"update_{ont_name}", help="Download and update ontology data"):
+                        # Update button
+                        if st.button(
+                            "🔄 Update from Source", 
+                            key=f"update_btn_{ont_name}",
+                            type="primary",
+                            help="Download latest version and check for updates"
+                        ):
                             if not source_url.strip():
                                 st.error("❌ Source URL is required")
                             else:
-                                st.session_state[f"confirm_update_{ont_name}"] = True
+                                # Start update process
+                                with st.spinner("Starting update..."):
+                                    try:
+                                        api_key = st.session_state.get('api_key', '')
+                                        if not api_key:
+                                            st.error("❌ API key required")
+                                            st.stop()
+                                        
+                                        resp = requests.post(
+                                            f"{FASTAPI_URL}/admin/update_ontology",
+                                            headers={"X-API-Key": api_key},
+                                            json={
+                                                "ontology_name": ont_name,
+                                                "source_url": source_url
+                                            },
+                                            timeout=10
+                                        )
+                                        
+                                        if resp.ok:
+                                            st.success("✅ Update started")
+                                            st.session_state[f"update_progress_{ont_name}"] = {
+                                                "status": "started",
+                                                "timestamp": time.time()
+                                            }
+                                            st.rerun()
+                                        else:
+                                            st.error(f"❌ Failed: {resp.text}")
+                                    except Exception as e:
+                                        st.error(f"❌ Error: {str(e)}")
+            
+            # Show any active update progress AFTER all expanders
+            st.markdown("---")
+            for ont_name, ont_config in enabled_ontologies_list:
+                if f"update_progress_{ont_name}" in st.session_state:
+                    show_update_progress(ont_name, st.session_state.get('api_key', ''))
+    
+    # Back button
+    st.markdown("---")
+    if st.button("❌ Back to Home", key="back_from_update_mgmt"):
+        st.session_state.show_ontology_update_management = False
+        # Clear update-related states
+        keys_to_clear = [k for k in st.session_state.keys() if k.startswith(('update_progress_', 'update_url_'))]
+        for key in keys_to_clear:
+            del st.session_state[key]
+        st.rerun()
+
+# Ontology Embedding Management Page  
+if st.session_state.get('show_ontology_embedding_management', False):
+    st.markdown("---")
+    st.markdown("## 🧠 Ontology Embedding Management")
+    st.markdown("Generate and manage embeddings for downloaded ontologies")
+    
+    # Load configurations
+    config = load_ontology_config()
+    embeddings_config = load_embeddings_config()
+    ontologies = config.get("ontologies", {})
+    
+    # Display current embedding configuration
+    model_name = embeddings_config.get("model", {}).get("name", "text-ada-002")
+    st.info(f"📊 **Current Embedding Model:** {model_name}")
+    
+    # Link to embeddings configuration
+    if st.button("⚙️ Configure Embedding Settings", key="link_to_embed_config"):
+        st.session_state.show_embeddings_config = True
+        st.session_state.show_ontology_embedding_management = False
+        st.rerun()
+    
+    st.markdown("---")
+    
+    if not ontologies:
+        st.warning("⚠️ No ontologies configured.")
+    else:
+        # Check which ontologies have been downloaded (exist in ontology_versions.json)
+        available_for_embedding = []
+        for ont_name, ont_config in ontologies.items():
+            if ont_config.get("enabled", True):
+                # Check if ontology has been downloaded
+                history = get_download_history(ont_name)
+                if history:  # Has download history = available for embedding
+                    available_for_embedding.append((ont_name, ont_config))
+        
+        if not available_for_embedding:
+            st.warning("⚠️ No ontologies available for embedding. Please download ontologies first using the Update Management page.")
+        else:
+            st.markdown("### 📋 Available Ontologies for Embedding")
+            
+            # Cost estimation
+            cost_per_1k = {
+                "text-ada-002": 0.0001,
+                "text-embedding-3-small": 0.00002,
+                "text-embedding-3-large": 0.00013
+            }
+            estimated_cost = cost_per_1k.get(model_name, 0.0001)
+            
+            for ont_name, ont_config in available_for_embedding:
+                # Check if embedding is in progress
+                has_active_embedding = f"embedding_progress_{ont_name}" in st.session_state
+                
+                with st.expander(f"🧬 {ont_name} - {ont_config.get('name', 'Unknown')}", expanded=has_active_embedding):
+                    col1, col2 = st.columns([3, 1])
+                    
+                    with col1:
+                        st.markdown(f"**Ontology:** {ont_name}")
+                        st.markdown(f"**Full Name:** {ont_config.get('name', 'Unknown')}")
                         
-                        st.markdown("*Note: This only downloads the ontology file. Embeddings are separate.*")
+                        # Show last download info
+                        history = get_download_history(ont_name)
+                        if history:
+                            last_version = history[-1]
+                            timestamp = datetime.fromisoformat(last_version['timestamp'])
+                            st.markdown(f"**Last Updated:** {timestamp.strftime('%Y-%m-%d %H:%M:%S')}")
+                            st.markdown(f"**Current Version:** {last_version['filename']}")
                         
-                        # Show confirmation dialog if needed
-                        if st.session_state.get(f"confirm_update_{ont_name}", False):
-                            st.warning(f"⚠️ **Confirm updating {ont_name}?**")
-                            st.markdown("This will download new ontology data from the source URL.")
-                            
-                            col_confirm1, col_confirm2 = st.columns(2)
-                            with col_confirm1:
-                                if st.button(f"✅ Confirm", key=f"confirm_update_btn_{ont_name}", type="primary"):
-                                    # Call the FastAPI update endpoint instead of local download
-                                    with st.spinner(f"Starting ontology update for {ont_name}..."):
-                                        try:
-                                            api_key = st.session_state.get('api_key', '')
-                                            if not api_key:
-                                                st.error("❌ API key not found. Please enter your API key in the sidebar.")
-                                                st.stop()
-                                            
-                                            resp = requests.post(
-                                                f"{FASTAPI_URL}/admin/update_ontology",
-                                                headers={"X-API-Key": api_key},
-                                                json={
-                                                    "ontology_name": ont_name,
-                                                    "source_url": source_url
-                                                },
-                                                timeout=10
-                                            )
-                                            
-                                            if resp.ok:
-                                                st.success(f"✅ Ontology update started for {ont_name}")
-                                                # Store operation in session state for progress tracking
-                                                st.session_state[f"update_progress_{ont_name}"] = {
-                                                    "status": "started",
-                                                    "ontology": ont_name,
-                                                    "timestamp": time.time()
-                                                }
-                                            else:
-                                                st.error(f"❌ Failed to start update: {resp.text}")
-                                        except Exception as e:
-                                            st.error(f"❌ Error starting update: {str(e)}")
-                                    
-                                    # Clear confirmation state
-                                    del st.session_state[f"confirm_update_{ont_name}"]
-                                    st.rerun()
-                            
-                            with col_confirm2:
-                                if st.button(f"❌ Cancel", key=f"cancel_update_btn_{ont_name}"):
-                                    del st.session_state[f"confirm_update_{ont_name}"]
+                        # Embedding info
+                        st.markdown(f"**Embedding Model:** {model_name}")
+                        st.markdown(f"💰 **Estimated Cost:** ~${estimated_cost:.5f} per 1,000 tokens")
                         
-                        # Cost estimation for embeddings
-                        cost_per_1k = {
-                            "text-ada-002": 0.0001, 
-                            "text-embedding-3-small": 0.00002, 
-                            "text-embedding-3-large": 0.00013
-                        }
-                        estimated_cost = cost_per_1k.get(model_name, 0.0001)
-                        st.markdown(f"💰 **Est. Cost:** ~${estimated_cost:.5f}/1K tokens")
+                        # Vectorization settings summary
+                        st.markdown("**Vectorization Settings:**")
+                        vectorize_fields = embeddings_config.get("vectorize_fields", {})
+                        fields = []
+                        if vectorize_fields.get("name", True): fields.append("Name")
+                        if vectorize_fields.get("definition", True): fields.append("Definition")
+                        if vectorize_fields.get("synonyms", True): fields.append("Synonyms")
+                        st.markdown(f"- Fields: {', '.join(fields)}")
+                        st.markdown(f"- Batch Size: {embeddings_config.get('processing', {}).get('batch_size', 100)}")
+                    
+                    with col2:
+                        st.markdown("**Actions:**")
                         
-                        # Create Embeddings Button with warnings
-                        st.markdown("---")
-                        
-                        # Check if we're in any stage of the embedding confirmation process
-                        if f"confirm_embed_step1_{ont_name}" not in st.session_state and f"confirm_embed_step2_{ont_name}" not in st.session_state:
-                            # Initial button to start the process
-                            if st.button(f"🧠 Create Embeddings", key=f"embed_{ont_name}", help="Generate embeddings for this ontology"):
-                                st.session_state[f"confirm_embed_step1_{ont_name}"] = True
+                        # Generate embeddings button with confirmation
+                        if f"confirm_embed_{ont_name}" not in st.session_state:
+                            if st.button(
+                                "🚀 Generate Embeddings",
+                                key=f"gen_embed_btn_{ont_name}",
+                                type="primary",
+                                help="Generate embeddings for this ontology"
+                            ):
+                                st.session_state[f"confirm_embed_{ont_name}"] = True
                                 st.rerun()
-                        
-                        # Show first confirmation step
-                        elif f"confirm_embed_step1_{ont_name}" in st.session_state and f"confirm_embed_step2_{ont_name}" not in st.session_state:
-                            st.error("⚠️ **WARNING: This operation costs money!**")
-                            st.warning(f"This will generate embeddings for all terms in {ont_name} using OpenAI's API.")
-                            st.info(f"Estimated cost: ~${estimated_cost:.5f} per 1,000 tokens")
+                        else:
+                            # Show confirmation
+                            st.error("⚠️ **This will incur costs!**")
+                            st.warning(f"Generate embeddings for {ont_name}?")
+                            st.info(f"Est. cost: ~${estimated_cost:.5f}/1K tokens")
                             
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                if st.button(f"💸 I Understand the Cost", key=f"cost_confirm_{ont_name}", type="primary"):
-                                    st.session_state[f"confirm_embed_step2_{ont_name}"] = True
-                                    st.rerun()
-                            with col2:
-                                if st.button(f"❌ Cancel", key=f"cancel_cost_confirm_{ont_name}"):
-                                    del st.session_state[f"confirm_embed_step1_{ont_name}"]
-                                    st.rerun()
-                        
-                        # Show final confirmation step
-                        elif f"confirm_embed_step2_{ont_name}" in st.session_state:
-                            st.warning("⚠️ **Final confirmation required:**")
-                            st.markdown(f"**Ontology:** {ont_name}")
-                            st.markdown(f"**Model:** {model_name}")
-                            st.markdown(f"**This action cannot be undone easily.**")
-                            
-                            col_confirm1, col_confirm2 = st.columns(2)
-                            with col_confirm1:
-                                if st.button(f"🚀 START EMBEDDINGS", key=f"final_confirm_{ont_name}", type="primary"):
-                                    # Start embedding process
-                                    with st.spinner(f"Checking OpenAI API and starting embeddings for {ont_name}..."):
+                            col_yes, col_no = st.columns(2)
+                            with col_yes:
+                                if st.button("✅ Confirm", key=f"confirm_yes_{ont_name}"):
+                                    # Start embedding generation
+                                    with st.spinner("Starting..."):
                                         try:
-                                            # Get API key from session state
                                             api_key = st.session_state.get('api_key', '')
                                             if not api_key:
-                                                st.error("❌ API key not found. Please enter your API key in the sidebar.")
+                                                st.error("❌ API key required")
                                                 st.stop()
                                             
-                                            # First check OpenAI health
+                                            # Check OpenAI health first
                                             health_resp = requests.get(
                                                 f"{FASTAPI_URL}/admin/openai_health",
                                                 headers={"X-API-Key": api_key},
@@ -1108,18 +1130,11 @@ if st.session_state.get('show_ontology_management', False):
                                             if health_resp.ok:
                                                 health_data = health_resp.json()
                                                 if not health_data.get("healthy", False):
-                                                    st.error(f"❌ OpenAI API is not accessible: {health_data.get('details', 'Unknown error')}")
-                                                    # Clear confirmation states
-                                                    if f"confirm_embed_step1_{ont_name}" in st.session_state:
-                                                        del st.session_state[f"confirm_embed_step1_{ont_name}"]
-                                                    if f"confirm_embed_step2_{ont_name}" in st.session_state:
-                                                        del st.session_state[f"confirm_embed_step2_{ont_name}"]
+                                                    st.error(f"❌ OpenAI API issue: {health_data.get('details', 'Unknown')}")
+                                                    del st.session_state[f"confirm_embed_{ont_name}"]
                                                     st.stop()
-                                            else:
-                                                st.error(f"❌ Failed to check OpenAI health: {health_resp.text}")
-                                                st.stop()
                                             
-                                            # Call embedding API endpoint
+                                            # Start embeddings
                                             resp = requests.post(
                                                 f"{FASTAPI_URL}/admin/generate_embeddings",
                                                 headers={"X-API-Key": api_key},
@@ -1128,54 +1143,43 @@ if st.session_state.get('show_ontology_management', False):
                                             )
                                             
                                             if resp.ok:
-                                                st.success(f"✅ Embedding generation started for {ont_name}")
-                                                # Store operation in session state for progress tracking
+                                                st.success("✅ Started")
                                                 st.session_state[f"embedding_progress_{ont_name}"] = {
                                                     "status": "started",
-                                                    "ontology": ont_name,
                                                     "timestamp": time.time()
                                                 }
+                                                del st.session_state[f"confirm_embed_{ont_name}"]
+                                                st.rerun()
                                             else:
-                                                st.error(f"❌ Failed to start embeddings: {resp.text}")
+                                                st.error(f"❌ Failed: {resp.text}")
                                         except Exception as e:
-                                            st.error(f"❌ Error starting embeddings: {str(e)}")
-                                    # Clear confirmation states
-                                    if f"confirm_embed_step1_{ont_name}" in st.session_state:
-                                        del st.session_state[f"confirm_embed_step1_{ont_name}"]
-                                    if f"confirm_embed_step2_{ont_name}" in st.session_state:
-                                        del st.session_state[f"confirm_embed_step2_{ont_name}"]
-                                    st.rerun()
+                                            st.error(f"❌ Error: {str(e)}")
+                                    del st.session_state[f"confirm_embed_{ont_name}"]
                             
-                            with col_confirm2:
-                                if st.button(f"❌ Cancel", key=f"cancel_embed_{ont_name}"):
-                                    # Clear confirmation states
-                                    if f"confirm_embed_step1_{ont_name}" in st.session_state:
-                                        del st.session_state[f"confirm_embed_step1_{ont_name}"]
-                                    if f"confirm_embed_step2_{ont_name}" in st.session_state:
-                                        del st.session_state[f"confirm_embed_step2_{ont_name}"]
+                            with col_no:
+                                if st.button("❌ Cancel", key=f"confirm_no_{ont_name}"):
+                                    del st.session_state[f"confirm_embed_{ont_name}"]
                                     st.rerun()
-                        
-                    # Close the ontology expander before showing embedding progress
-                    
+                
                 # Show embedding progress OUTSIDE the expander
                 if f"embedding_progress_{ont_name}" in st.session_state:
                     show_embedding_progress(ont_name, st.session_state.get('api_key', ''))
     
-    # Cancel button
+    # Note about embeddings
     st.markdown("---")
-    if st.button("❌ Back to Home"):
-        st.session_state.show_ontology_management = False
-        if 'ontology_management_data' in st.session_state:
-            del st.session_state.ontology_management_data
-        if 'ontology_view' in st.session_state:
-            del st.session_state.ontology_view
-        # Clear any pending confirmations
-        keys_to_clear = [key for key in st.session_state.keys() if key.startswith(('confirm_', 'embedding_progress_', 'download_result_'))]
+    st.info(
+        "💡 **Note:** This page is for managing embeddings of already downloaded ontologies. "
+        "To download or update ontologies, use the Update Management page."
+    )
+    
+    # Back button
+    if st.button("❌ Back to Home", key="back_from_embed_mgmt"):
+        st.session_state.show_ontology_embedding_management = False
+        # Clear embedding-related states
+        keys_to_clear = [k for k in st.session_state.keys() if k.startswith(('embedding_progress_', 'confirm_embed_'))]
         for key in keys_to_clear:
             del st.session_state[key]
         st.rerun()
-    
-    st.markdown("---")
 
 # Get enabled ontologies (needed for both main interface and sidebar)
 enabled_ontologies = get_enabled_ontologies()
@@ -1185,7 +1189,8 @@ if not any([
     st.session_state.get('show_config_editor', False),
     st.session_state.get('show_health_dashboard', False),
     st.session_state.get('show_embeddings_config', False),
-    st.session_state.get('show_ontology_management', False)
+    st.session_state.get('show_ontology_update_management', False),
+    st.session_state.get('show_ontology_embedding_management', False)
 ]):
     # Main resolution interface
     passage = st.text_area("Passage", help="Enter the scientific text you want to map to ontology terms")
@@ -1242,8 +1247,10 @@ if st.sidebar.button("🏠 Home", type="primary", use_container_width=True):
         st.session_state.show_config_editor = False
     if 'show_embeddings_config' in st.session_state:
         st.session_state.show_embeddings_config = False
-    if 'show_ontology_management' in st.session_state:
-        st.session_state.show_ontology_management = False
+    if 'show_ontology_update_management' in st.session_state:
+        st.session_state.show_ontology_update_management = False
+    if 'show_ontology_embedding_management' in st.session_state:
+        st.session_state.show_ontology_embedding_management = False
     if 'config_editor_text' in st.session_state:
         del st.session_state.config_editor_text
     if 'original_config_text' in st.session_state:
@@ -1257,9 +1264,10 @@ if st.sidebar.button("🏠 Home", type="primary", use_container_width=True):
     if 'editor_version' in st.session_state:
         del st.session_state.editor_version
     # Clear ontology management related states
-    if 'ontology_view' in st.session_state:
-        del st.session_state.ontology_view
-    keys_to_clear = [key for key in st.session_state.keys() if key.startswith(('confirm_', 'embedding_progress_', 'download_result_', 'ontology_management_'))]
+    keys_to_clear = [key for key in st.session_state.keys() if key.startswith((
+        'confirm_', 'embedding_progress_', 'update_progress_', 'download_result_',
+        'update_url_', 'confirm_embed_'
+    ))]
     for key in keys_to_clear:
         del st.session_state[key]
     st.rerun()
@@ -1315,13 +1323,35 @@ if api_key:
     
     # Ontology Management Section
     st.sidebar.subheader("🔄 Ontology Management")
-    if st.sidebar.button("Manage Ontologies"):
-        st.session_state.show_ontology_management = True
+    
+    # Update Management button
+    if st.sidebar.button("📥 Ontology Updates"):
+        st.session_state.show_ontology_update_management = True
         st.session_state.api_key = api_key  # Store API key for operations
         # Clear other views
         st.session_state.show_health_dashboard = False
         st.session_state.show_config_editor = False
         st.session_state.show_embeddings_config = False
+        st.session_state.show_ontology_embedding_management = False
+        if 'health_status' in st.session_state:
+            del st.session_state.health_status
+        if 'config_editor_text' in st.session_state:
+            del st.session_state.config_editor_text
+        if 'original_config_text' in st.session_state:
+            del st.session_state.original_config_text
+        if 'embedding_config' in st.session_state:
+            del st.session_state.embedding_config
+        st.rerun()
+    
+    # Embedding Management button
+    if st.sidebar.button("🧠 Manage Embeddings"):
+        st.session_state.show_ontology_embedding_management = True
+        st.session_state.api_key = api_key  # Store API key for operations
+        # Clear other views
+        st.session_state.show_health_dashboard = False
+        st.session_state.show_config_editor = False
+        st.session_state.show_embeddings_config = False
+        st.session_state.show_ontology_update_management = False
         if 'health_status' in st.session_state:
             del st.session_state.health_status
         if 'config_editor_text' in st.session_state:
@@ -1340,6 +1370,8 @@ if api_key:
         # Clear other views
         st.session_state.show_health_dashboard = False
         st.session_state.show_config_editor = False
+        st.session_state.show_ontology_update_management = False
+        st.session_state.show_ontology_embedding_management = False
         if 'health_status' in st.session_state:
             del st.session_state.health_status
         if 'config_editor_text' in st.session_state:
@@ -1353,7 +1385,8 @@ if not any([
     st.session_state.get('show_config_editor', False),
     st.session_state.get('show_health_dashboard', False),
     st.session_state.get('show_embeddings_config', False),
-    st.session_state.get('show_ontology_management', False)
+    st.session_state.get('show_ontology_update_management', False),
+    st.session_state.get('show_ontology_embedding_management', False)
 ]):
     st.header("🧪 API Testing Interface")
     st.write("Send mock JSON requests to test the API endpoints")

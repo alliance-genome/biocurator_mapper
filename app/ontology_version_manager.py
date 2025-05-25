@@ -121,8 +121,27 @@ class OntologyVersionManager:
         metadata_path = self.get_version_metadata_path(ontology_name)
         
         try:
-            with open(metadata_path, 'w') as f:
-                json.dump(metadata, f, indent=2)
+            # Use atomic write with fallback for Docker environments
+            import tempfile
+            dir_name = os.path.dirname(metadata_path)
+            os.makedirs(dir_name, exist_ok=True)
+            
+            with tempfile.NamedTemporaryFile('w', dir=dir_name, delete=False) as tf:
+                json.dump(metadata, tf, indent=2)
+                temp_name = tf.name
+            
+            # Try atomic replace first
+            try:
+                os.replace(temp_name, metadata_path)
+            except OSError:
+                # Fall back to copy method for Docker volumes
+                import shutil
+                shutil.copy2(temp_name, metadata_path)
+                try:
+                    os.unlink(temp_name)
+                except OSError:
+                    pass
+            
             self.logger.info(f"Stored version metadata for {ontology_name} at {metadata_path}")
         except Exception as e:
             self.logger.error(f"Failed to store version metadata: {e}")

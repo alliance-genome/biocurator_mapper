@@ -28,7 +28,7 @@ FROM base as production
 # Copy application code
 COPY app ./app
 COPY ontology_config.yaml .
-COPY go.json .
+COPY embeddings_config.yaml .
 
 # Create data directory for ontology storage
 RUN mkdir -p /app/data
@@ -36,15 +36,9 @@ RUN mkdir -p /app/data
 # Create non-root user for security
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
-# Create empty version files with proper permissions
-RUN touch /app/ontology_versions.json && \
-    touch /app/embeddings_config.yaml || true
-
 # Set ownership and permissions
 RUN chown -R appuser:appuser /app && \
-    chmod -R 755 /app && \
-    chmod 664 /app/ontology_versions.json && \
-    chmod 664 /app/embeddings_config.yaml || true
+    chmod -R 755 /app
 
 USER appuser
 

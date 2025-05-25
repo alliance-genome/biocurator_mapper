@@ -100,7 +100,7 @@ def get_nested_value(data: dict, path: list, default=""):
     return current
 
 async def _perform_ontology_update(ontology_name: str, source_url: str):
-    """Download the ontology from ``source_url``, save to disk, and load it into Weaviate."""
+    """Download the ontology from ``source_url`` and save to disk."""
     
     # Initialize progress tracking
     progress_key = ontology_name
@@ -225,83 +225,21 @@ async def _perform_ontology_update(ontology_name: str, source_url: str):
             update_progress("failed", 0, error_msg)
             raise exc
 
-        update_progress("parsing", 45, "Parsing JSON file...")
+        update_progress("completed", 100, f"Download completed! File saved to {filename}")
+        add_log(f"Ontology download completed successfully. File: {filename}")
         
-        # Load and parse the downloaded file from persistent location
-        try:
-            async with aiofiles.open(file_path, 'r') as f:
-                content = await f.read()
-                data = json.loads(content)
-            add_log("Successfully parsed JSON data")
-        except Exception as exc:
-            error_msg = f"Error parsing JSON: {str(exc)}"
-            add_log(error_msg, "ERROR")
-            update_progress("failed", 0, error_msg)
-            raise exc
-
-        update_progress("version_check", 50, "Checking version information...")
-
-        # Get ontology-specific configuration
-        ontology_config = get_ontology_config(ontology_name)
+        # Store download metadata
+        download_info = {
+            "ontology_name": ontology_name,
+            "source_url": source_url,
+            "filename": filename,
+            "file_path": file_path,
+            "downloaded_at": datetime.utcnow().isoformat(),
+            "size_bytes": downloaded_size
+        }
         
-        # Check if version comparison indicates update is needed
-        needs_update, stored_info, new_version_info = version_manager.compare_versions(
-            ontology_name, data
-        )
-        
-        if not needs_update and stored_info:
-            add_log(f"Ontology is up to date (version: {stored_info.get('version_info', {}).get('version_date', 'unknown')})")
-            update_progress("completed", 100, "Ontology already up to date")
-            
-            # Update config to point to existing collection
-            config_updater.update_ontology_version(
-                ontology_name, stored_info['collection_name'], source_url
-            )
-            
-            return stored_info['collection_name']
-
-        add_log(f"New version detected: {new_version_info.get('version_date', 'unknown')}")
-        update_progress("processing", 60, "Processing ontology terms...")
-
-        # Use enhanced GO parser for comprehensive data extraction
-        id_format = ontology_config.get("id_format", {"prefix_replacement": {"_": ":"}})
-        parsed_terms = parse_go_json_enhanced(data, id_format)
-
-        add_log(f"Successfully parsed {len(parsed_terms)} terms")
-        update_progress("embedding", 70, f"Creating embeddings for {len(parsed_terms)} terms...")
-
-        new_collection = f"{ontology_name}_{int(datetime.utcnow().timestamp())}"
-        # Create embedding progress callback
-        def embedding_progress_callback(status: str, percentage: int, message: str, extra_data: dict):
-            """Update embedding progress in the main progress tracker."""
-            if progress_key in update_progress_store:
-                update_progress_store[progress_key].update({
-                    "embedding_status": status,
-                    "embedding_percentage": percentage,
-                    "embedding_message": message,
-                    "embedding_stats": extra_data
-                })
-                # Update overall progress (70-90% for embeddings)
-                overall_percentage = 70 + int(percentage * 0.2)
-                update_progress("embedding", overall_percentage, message)
-        
-        await ontology_manager.create_and_load_ontology_collection(
-            new_collection, parsed_terms, OPENAI_API_KEY, embedding_progress_callback
-        )
-        
-        update_progress("finalizing", 90, "Storing version metadata...")
-        
-        # Store version metadata for future comparisons
-        version_manager.store_version_info(ontology_name, new_version_info, new_collection, source_url)
-        
-        config_updater.update_ontology_version(
-            ontology_name, new_collection, source_url
-        )
-        
-        add_log(f"Ontology update completed successfully. Collection: {new_collection}")
-        update_progress("completed", 100, "Update completed successfully!")
-        
-        return new_collection
+        # You might want to store this info somewhere for the embeddings page to use
+        return download_info
         
     except Exception as exc:
         error_msg = f"Ontology update failed: {str(exc)}"

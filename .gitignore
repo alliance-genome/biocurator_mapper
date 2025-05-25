@@ -180,3 +180,23 @@ ontology_versions.json
 *.json.gz
 go.json
 sample_go_data.json
+
+*.png
+CLAUDE.local.md
+
+# Node.js
+node_modules/
+package-lock.json
+package.json
+
+# Playwright
+playwright.config.ts
+playwright-report/
+test-results/
+
+# Test artifacts
+do_test_output.log
+debug_*.py
+
+# E2E test runner scripts
+run_e2e_tests.sh

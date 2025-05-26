@@ -15,7 +15,7 @@ import openai
 from .ontology_manager import OntologyManager
 from .ontology_searcher import OntologySearcher
 from .llm_matcher import LLMMatcher
-from .config_updater import ConfigUpdater
+from .config_updater import ConfigUpdater, DownloadHistoryManager
 from .config import ADMIN_API_KEY, OPENAI_API_KEY, ONTOLOGY_CONFIG, load_ontology_config, EMBEDDINGS_CONFIG, load_embeddings_config
 from .go_parser import parse_go_json_enhanced
 from .ontology_version_manager import OntologyVersionManager
@@ -241,7 +241,16 @@ async def _perform_ontology_update(ontology_name: str, source_url: str):
             "size_bytes": downloaded_size
         }
         
-        # You might want to store this info somewhere for the embeddings page to use
+        # Update the download history so Streamlit can see it
+        download_history_manager = DownloadHistoryManager()
+        download_history_manager.add_download_record(
+            ontology_name=ontology_name,
+            filename=filename,
+            size_bytes=downloaded_size,
+            timestamp=download_info["downloaded_at"] + "Z"
+        )
+        add_log(f"Updated download history for {ontology_name}")
+        
         return download_info
         
     except Exception as exc:

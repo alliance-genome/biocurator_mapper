@@ -94,3 +94,107 @@ class ConfigUpdater:
 
     def get_all_ontology_configs(self) -> Dict:
         return self._read_config()
+
+
+class DownloadHistoryManager:
+    def __init__(self, data_dir: str = None):
+        if data_dir is None:
+            data_dir = os.environ.get("ONTOLOGY_DATA_DIR", "/app/data")
+        self.history_file = os.path.join(data_dir, "ontology_downloads_history.json")
+        self.max_records_per_ontology = 10
+
+    def _read_history(self) -> Dict:
+        if not os.path.exists(self.history_file):
+            return {}
+        try:
+            with open(self.history_file, "r") as f:
+                if fcntl:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_SH)
+                try:
+                    data = json.load(f)
+                except json.JSONDecodeError:
+                    data = {}
+                finally:
+                    if fcntl:
+                        fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+            return data
+        except Exception:
+            return {}
+
+    def _write_history(self, history: Dict) -> None:
+        dir_name = os.path.dirname(self.history_file)
+        os.makedirs(dir_name, exist_ok=True)
+        
+        # Use same atomic write pattern as ConfigUpdater
+        with tempfile.NamedTemporaryFile("w", dir=dir_name, delete=False) as tf:
+            json.dump(history, tf, indent=2)
+            temp_name = tf.name
+        
+        try:
+            os.replace(temp_name, self.history_file)
+        except OSError:
+            # Fall back to copy and delete for Docker volumes
+            import shutil
+            try:
+                if os.path.exists(self.history_file):
+                    backup_path = f"{self.history_file}.backup"
+                    shutil.copy2(self.history_file, backup_path)
+                
+                shutil.copy2(temp_name, self.history_file)
+                
+                try:
+                    os.unlink(temp_name)
+                except OSError:
+                    pass
+                    
+                if os.path.exists(backup_path):
+                    try:
+                        os.unlink(backup_path)
+                    except OSError:
+                        pass
+            except Exception:
+                if os.path.exists(backup_path):
+                    shutil.copy2(backup_path, self.history_file)
+                raise
+
+    def add_download_record(self, ontology_name: str, filename: str, 
+                          size_bytes: int, timestamp: str = None) -> None:
+        """Add a download record for an ontology."""
+        history = self._read_history()
+        
+        if timestamp is None:
+            timestamp = datetime.utcnow().isoformat() + "Z"
+        
+        record = {
+            "filename": filename,
+            "timestamp": timestamp,
+            "size_mb": round(size_bytes / (1024 * 1024), 2) if size_bytes else 0
+        }
+        
+        # Initialize list if not exists
+        if ontology_name not in history:
+            history[ontology_name] = []
+        
+        # Add new record
+        history[ontology_name].append(record)
+        
+        # Keep only last N records
+        history[ontology_name] = history[ontology_name][-self.max_records_per_ontology:]
+        
+        self._write_history(history)
+
+    def get_download_history(self) -> Dict:
+        """Get the full download history."""
+        return self._read_history()
+
+    def clear_history(self, ontology_name: str = None) -> None:
+        """Clear download history for a specific ontology or all."""
+        history = self._read_history()
+        
+        if ontology_name:
+            if ontology_name in history:
+                del history[ontology_name]
+        else:
+            history = {}
+        
+        self._write_history(history)

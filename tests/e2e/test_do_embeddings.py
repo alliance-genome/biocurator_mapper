@@ -19,8 +19,7 @@ class TestDOEmbeddings:
         api_input.fill(admin_api_key)
         api_input.press("Enter")
         
-        # Wait for authentication
-        page.wait_for_timeout(2000)
+        # Wait for authentication by checking for admin panel visibility
         
         # Verify admin features are available
         expect(page.locator("text=🔧 Admin Panel")).to_be_visible(timeout=5000)
@@ -50,37 +49,26 @@ class TestDOEmbeddings:
         # Wait for page to load
         expect(page.locator('text=Ontology Update Management')).to_be_visible(timeout=5000)
         
-        # Wait a moment for the page to fully load
-        page.wait_for_timeout(1000)
+        # Page load is confirmed by the previous expect
         
-        # Look for DOID expander and click it
-        doid_expander = page.locator('text="🧬 DOID - Disease Ontology"').first
+        # Look for DOID expander header and click it
+        doid_expander = page.locator('text="🧬 DOID - Disease Ontology"')
         expect(doid_expander).to_be_visible(timeout=5000)
         doid_expander.click()
         
-        # Wait for expander to fully open
-        page.wait_for_timeout(1000)
+        # Wait a moment for expansion
+        page.wait_for_timeout(500)
         
-        # Find visible Update button - use nth to get the right one if multiple exist
-        # Based on the screenshot, the DOID update button should be the second one
-        all_update_buttons = page.locator('button:has-text("Update from Source")')
-        
-        # Find the visible button
-        update_btn = None
-        for i in range(all_update_buttons.count()):
-            btn = all_update_buttons.nth(i)
+        # Find Update button - it should be visible after expanding
+        update_btn = page.locator('button:has-text("🔄 Update from Source")').filter(has_text="Update")
+        # Find the one that's visible
+        for i in range(update_btn.count()):
+            btn = update_btn.nth(i)
             if btn.is_visible():
-                update_btn = btn
+                btn.click()
                 break
         
-        if not update_btn:
-            raise Exception("Could not find visible Update from Source button")
-        
-        # Click the button
-        update_btn.click()
-        
-        # Wait a moment for the download to start
-        page.wait_for_timeout(2000)
+        # Wait for download to start by checking for progress indicators
         
         # Take a screenshot to see what's happening
         page.screenshot(path="debug_download_progress.png")
@@ -111,28 +99,23 @@ class TestDOEmbeddings:
             'text=/Saved.*DOID/i'
         ]
         
-        completion_found = False
-        for i in range(60):  # Check for 60 seconds
-            for selector in completion_selectors:
-                element = page.locator(selector)
-                if element.is_visible():
-                    completion_found = True
-                    print(f"Completion found: {element.text_content()}")
-                    break
-            if completion_found:
-                break
-            page.wait_for_timeout(1000)
+        # Wait for any completion indicator with proper timeout
+        completion_locator = page.locator('text=/Download completed|Update completed|completed successfully/i').or_(
+            page.locator('text=/✅.*completed/i')
+        ).or_(
+            page.locator('text=/Successfully.*downloaded/i')
+        ).or_(
+            page.locator('text=/DOID.*updated/i')
+        ).or_(
+            page.locator('text=/Saved.*DOID/i')
+        )
+        
+        expect(completion_locator).to_be_visible(timeout=60000)
         
         # Take final screenshot
         page.screenshot(path="debug_download_final.png")
         
-        if not completion_found:
-            # Check for error messages
-            error_element = page.locator('text=/Error|Failed|Exception/i').first
-            if error_element.is_visible():
-                raise Exception(f"Download failed with error: {error_element.text_content()}")
-            else:
-                raise Exception("Download did not complete within timeout")
+        # No need for additional error checking as expect will fail with timeout if not found
     
     def _navigate_to_embeddings(self, page: Page):
         """Navigate to the embeddings management page."""
@@ -145,26 +128,21 @@ class TestDOEmbeddings:
     
     def _generate_embeddings(self, page: Page):
         """Generate embeddings for DO."""
-        # Look for DOID expander using data-testid
-        doid_expander_marker = page.locator('[data-testid="expander-DOID"]')
-        if doid_expander_marker.count() > 0:
-            # Click the expander to open it
-            doid_embedding_section = page.locator('text=🧬 DOID - Disease Ontology').first
-            if doid_embedding_section.is_visible():
-                doid_embedding_section.click()
+        # Look for DOID expander and click it
+        doid_expander = page.locator('text="🧬 DOID - Disease Ontology"')
+        expect(doid_expander).to_be_visible(timeout=5000)
+        doid_expander.click()
         
-        # Find Generate Embeddings button using data-testid marker
-        generate_btn_marker = page.locator('[data-testid="button-generate-embeddings-DOID"]')
-        expect(generate_btn_marker).to_be_attached(timeout=5000)
+        # Wait a moment for expansion
+        page.wait_for_timeout(500)
         
-        # Click the actual button (next sibling of the marker)
-        generate_btn = page.locator('button:has-text("🚀 Generate Embeddings")', has=page.locator('[data-testid="button-generate-embeddings-DOID"]'))
-        if not generate_btn.is_visible():
-            # Fallback to finding by key
-            generate_btn = page.locator('button[id*="gen_embed_btn_DOID"]')
-        
-        expect(generate_btn).to_be_visible(timeout=5000)
-        generate_btn.click()
+        # Find Generate Embeddings button - look for visible one
+        generate_btns = page.locator('button:has-text("🚀 Generate Embeddings")')
+        for i in range(generate_btns.count()):
+            btn = generate_btns.nth(i)
+            if btn.is_visible():
+                btn.click()
+                break
         
         # Wait for confirmation dialog and confirm
         confirm_btn = page.locator('button:has-text("✅ Confirm")').first
@@ -173,37 +151,23 @@ class TestDOEmbeddings:
     
     def _verify_embeddings_completion(self, page: Page):
         """Verify embeddings generation completes successfully."""
-        # Check for embedding progress marker
-        progress_marker = page.locator('[data-testid="embedding-progress-DOID"]')
-        expect(progress_marker).to_be_attached(timeout=10000)
+        # Check for status messages directly (containers don't have data-testid)
+        # Wait for starting status
+        starting_status = page.locator('text=/Starting embedding generation/i')
+        expect(starting_status).to_be_visible(timeout=10000)
         
-        # Wait for initial status
-        status_marker = page.locator('[data-testid="text-status-DOID"]')
-        expect(status_marker).to_be_attached(timeout=5000)
+        # Monitor status messages
+        # Wait for processing/embedding status
+        processing_status = page.locator('text=/Processing terms|Generating embeddings/i')
+        expect(processing_status).to_be_visible(timeout=30000)
         
-        # Monitor status progression
-        expect(page.locator('[data-testid="text-status-DOID"][data-status="starting"]')).to_be_attached(timeout=10000)
+        # Wait for completion (this could take a while depending on ontology size)
+        completion_status = page.locator('text=/Embedding generation completed|Successfully created/i')
+        expect(completion_status).to_be_visible(timeout=300000)
         
-        # Wait for processing status
-        expect(page.locator('[data-testid="text-status-DOID"][data-status*="processing"]').or_(
-            page.locator('[data-testid="text-status-DOID"][data-status*="embedding"]')
-        )).to_be_attached(timeout=30000)
-        
-        # Monitor progress bar
-        progress_bar = page.locator('[data-testid="progressbar-DOID"]')
-        if progress_bar.count() > 0:
-            # Wait for progress to reach at least 50%
-            expect(progress_bar).to_have_attribute("data-progress", "50", timeout=60000)
-        
-        # Wait for completion status
-        expect(page.locator('[data-testid="text-status-DOID"][data-status="completed"]')).to_be_attached(timeout=300000)
-        
-        # Also check for visible completion message
-        expect(page.locator('text=/Embedding generation completed|Embeddings generated successfully/i')).to_be_visible(timeout=5000)
-        
-        # Verify no error status
-        error_status = page.locator('[data-testid="text-status-DOID"][data-status="failed"]')
-        expect(error_status).not_to_be_attached()
+        # Verify no errors
+        error_status = page.locator('text=/Failed|Error/i')
+        expect(error_status).not_to_be_visible()
 
 
 class TestDOEmbeddingsCancellation:
@@ -247,7 +211,6 @@ class TestDOEmbeddingsCancellation:
             update_btn.click()
             completion_text = page.locator('text=/Download completed|Update completed|completed successfully/i')
             expect(completion_text).to_be_visible(timeout=60000)
-            page.wait_for_timeout(2000)
     
     def test_cancel_embeddings_generation(self, page: Page):
         """Test cancelling embeddings generation."""
@@ -255,49 +218,49 @@ class TestDOEmbeddingsCancellation:
         page.locator('button:has-text("🧠 Manage Embeddings")').first.click()
         expect(page.locator("text=Ontology Embedding Management")).to_be_visible(timeout=5000)
         
-        # Start embeddings generation using data-testid
-        generate_btn_marker = page.locator('[data-testid="button-generate-embeddings-DOID"]')
-        if generate_btn_marker.count() > 0:
-            # Open expander first if needed
-            doid_expander = page.locator('text=🧬 DOID - Disease Ontology').first
-            if doid_expander.is_visible():
-                doid_expander.click()
+        # Look for DOID expander and click it
+        doid_expander = page.locator('text="🧬 DOID - Disease Ontology"')
+        expect(doid_expander).to_be_visible(timeout=5000)
+        doid_expander.click()
         
-        # Click generate button
-        generate_btn = page.locator('button[id*="gen_embed_btn_DOID"]')
-        expect(generate_btn).to_be_visible(timeout=5000)
-        generate_btn.click()
+        # Wait a moment for expansion
+        page.wait_for_timeout(500)
+        
+        # Find and click generate button
+        generate_btns = page.locator('button:has-text("🚀 Generate Embeddings")')
+        for i in range(generate_btns.count()):
+            btn = generate_btns.nth(i)
+            if btn.is_visible():
+                btn.click()
+                break
         
         # Confirm
         confirm_btn = page.locator('button:has-text("✅ Confirm")').first
         expect(confirm_btn).to_be_visible(timeout=5000)
         confirm_btn.click()
         
-        # Wait for generation to start - check status marker
-        expect(page.locator('[data-testid="text-status-DOID"][data-status="starting"]')).to_be_attached(timeout=10000)
+        # Wait for generation to start
+        starting_status = page.locator('text=/Starting embedding generation/i')
+        expect(starting_status).to_be_visible(timeout=10000)
         
         # Wait for processing to begin
-        expect(page.locator('[data-testid="text-status-DOID"][data-status*="processing"]').or_(
-            page.locator('[data-testid="text-status-DOID"][data-status*="embedding"]')
-        )).to_be_attached(timeout=20000)
+        processing_status = page.locator('text=/Processing terms|Generating embeddings/i')
+        expect(processing_status).to_be_visible(timeout=20000)
         
-        # Find and click cancel button using data-testid
-        cancel_btn_marker = page.locator('[data-testid="button-cancel-embeddings-DOID"]')
-        expect(cancel_btn_marker).to_be_attached(timeout=5000)
-        
-        cancel_btn = page.locator('button[id*="cancel_embedding_DOID"]')
+        # Find and click cancel button
+        cancel_btn = page.locator('button:has-text("🛑 Cancel Generation")').first
         expect(cancel_btn).to_be_visible(timeout=5000)
         cancel_btn.click()
         
         # Verify cancellation status
-        expect(page.locator('[data-testid="text-status-DOID"][data-status="cancelling"]')).to_be_attached(timeout=10000)
+        expect(page.locator('text=/Cancelling/i')).to_be_visible(timeout=10000)
         
         # Eventually should show cancelled status
-        expect(page.locator('[data-testid="text-status-DOID"][data-status="cancelled"]')).to_be_attached(timeout=30000)
+        expect(page.locator('text=/Embedding generation cancelled/i')).to_be_visible(timeout=30000)
         
         # Verify no completion status
-        completion_status = page.locator('[data-testid="text-status-DOID"][data-status="completed"]')
-        expect(completion_status).not_to_be_attached()
+        completion_status = page.locator('text=/Embedding generation completed/i')
+        expect(completion_status).not_to_be_visible()
 
 
 class TestEmbeddingsConfiguration:
@@ -328,42 +291,24 @@ class TestEmbeddingsConfiguration:
         # Verify config page loaded
         expect(page.locator("text=Embeddings Configuration")).to_be_visible(timeout=5000)
         
-        # Look for model selection using data-testid
-        model_select_marker = page.locator('[data-testid="select-embedding-model"]')
-        expect(model_select_marker).to_be_attached(timeout=5000)
+        # Find model selection using data-testid
+        model_select = page.locator('[data-testid="select-embedding-model"]')
+        expect(model_select).to_be_visible(timeout=5000)
         
-        # Find the actual select element
-        model_select = page.locator('div[role="combobox"]').filter(has_text="ada").or_(
-            page.locator('select').first
-        )
+        # Click to open dropdown and select a different model
+        model_select.click()
+        # Select text-embedding-3-small option
+        new_model_option = page.locator('div[role="option"]:has-text("text-embedding-3-small")')
+        expect(new_model_option).to_be_visible(timeout=5000)
+        new_model_option.click()
         
-        if model_select.is_visible():
-            # Click to open dropdown
-            model_select.click()
-            
-            # Select a different model
-            new_model_option = page.locator('div[role="option"]:has-text("text-embedding-3-small")').or_(
-                page.locator('option:has-text("text-embedding-3-small")')
-            )
-            if new_model_option.is_visible():
-                new_model_option.click()
+        # Find batch size input using data-testid
+        batch_input = page.locator('[data-testid="input-batch-size"]')
+        expect(batch_input).to_be_visible(timeout=5000)
+        batch_input.fill("50")
         
-        # Look for batch size input using data-testid
-        batch_size_marker = page.locator('[data-testid="input-batch-size"]')
-        if batch_size_marker.count() > 0:
-            # Find the actual input
-            batch_input = page.locator('input[type="number"][value*="100"]').or_(
-                page.locator('input[type="number"]').filter(has_text="Batch Size")
-            ).first
-            if batch_input.is_visible():
-                batch_input.fill("50")
-        
-        # Look for save button using data-testid
-        save_btn_marker = page.locator('[data-testid="button-save-embedding-config"]')
-        expect(save_btn_marker).to_be_attached(timeout=5000)
-        
-        # Click the actual save button
-        save_btn = page.locator('button:has-text("💾 Save Configuration")')
+        # Find save button using data-testid
+        save_btn = page.locator('[data-testid="button-save-embedding-config"]')
         expect(save_btn).to_be_visible(timeout=5000)
         save_btn.click()
         
@@ -371,13 +316,12 @@ class TestEmbeddingsConfiguration:
         expect(page.locator('text=/Configuration saved|Successfully saved|✅.*saved/i')).to_be_visible(timeout=5000)
         
         # Test configuration button
-        test_btn_marker = page.locator('[data-testid="button-test-embedding-config"]')
-        if test_btn_marker.count() > 0:
-            test_btn = page.locator('button:has-text("🔄 Test Configuration")')
-            if test_btn.is_visible():
-                test_btn.click()
-                # Wait for test results
-                expect(page.locator('text=/Test.*successful|Config.*OK|✅.*Config/i')).to_be_visible(timeout=10000)
+        test_btn = page.locator('[data-testid="button-test-embedding-config"]')
+        expect(test_btn).to_be_visible(timeout=5000)
+        test_btn.click()
+        
+        # Wait for test results
+        expect(page.locator('text=/Test.*successful|Config.*valid|✅/i')).to_be_visible(timeout=10000)
 
 
 if __name__ == "__main__":

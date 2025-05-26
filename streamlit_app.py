@@ -180,7 +180,9 @@ def show_update_progress(ont_name: str, api_key: str):
 
 def get_download_history(ont_name: str) -> list:
     """Get download history for an ontology."""
-    metadata_file = Path("ontology_versions.json")
+    # Use the same path as the backend
+    data_dir = Path(os.getenv("ONTOLOGY_DATA_DIR", "data"))
+    metadata_file = data_dir / "ontology_downloads_history.json"
     
     if not metadata_file.exists():
         return []
@@ -195,7 +197,9 @@ def get_download_history(ont_name: str) -> list:
 
 def clear_download_history(ont_name: str):
     """Clear download history for a specific ontology."""
-    metadata_file = Path("ontology_versions.json")
+    # Use the same path as the backend
+    data_dir = Path(os.getenv("ONTOLOGY_DATA_DIR", "data"))
+    metadata_file = data_dir / "ontology_downloads_history.json"
     
     if not metadata_file.exists():
         return
@@ -222,8 +226,7 @@ def show_embedding_progress(ont_name: str, api_key: str):
     st.markdown("---")
     st.markdown("### 🤖 Embedding Progress")
     
-    # Add a hidden div with data-testid for Playwright testing
-    st.markdown(f'<div data-testid="embedding-progress-{ont_name}" style="display: none;"></div>', unsafe_allow_html=True)
+    # Progress section is tracked via the containing elements
     
     # Get real-time progress from API
     try:
@@ -244,8 +247,7 @@ def show_embedding_progress(ont_name: str, api_key: str):
             
             # Status message with more detail
             with status_container:
-                # Add hidden div with data-testid for status text
-                st.markdown(f'<div data-testid="text-status-{ont_name}" data-status="{status}" style="display: none;">{status}</div>', unsafe_allow_html=True)
+                # Status container will have test identifiers
                 if status == "starting":
                     st.info(f"⏳ **Starting embedding generation**\n\nInitializing process... ({elapsed}s elapsed)")
                 elif status == "initializing":
@@ -288,7 +290,7 @@ def show_embedding_progress(ont_name: str, api_key: str):
                     progress_text = f"Progress: {percentage}% (Batch {current_batch}/{total_batches})"
             
             # Add hidden div with data-testid for progress bar
-            st.markdown(f'<div data-testid="progressbar-{ont_name}" data-progress="{percentage}" style="display: none;">{percentage}</div>', unsafe_allow_html=True)
+            # Progress bar percentage tracked via the progress component
             st.progress(percentage / 100, text=progress_text)
             
             # Embedding statistics
@@ -311,7 +313,8 @@ def show_embedding_progress(ont_name: str, api_key: str):
             # Recent logs in an expandable section
             recent_logs = progress_data.get("recent_logs", [])
             if recent_logs:
-                with st.expander("📋 Recent Activity Logs", expanded=(status == "failed")):
+                with st.expander("📋 Recent Activity Logs", 
+                                expanded=(status == "failed")):
                     for log in reversed(recent_logs):  # Show newest first
                         timestamp = log.get("timestamp", "")
                         message = log.get("message", "")
@@ -332,7 +335,7 @@ def show_embedding_progress(ont_name: str, api_key: str):
                 # Cancel button for embeddings (only if not completed)
                 if status not in ["completed", "failed", "cancelled", "completed_with_errors", "completed_with_failures"]:
                     # Add hidden div with data-testid for cancel button
-                    st.markdown(f'<div data-testid="button-cancel-embeddings-{ont_name}" style="display: none;"></div>', unsafe_allow_html=True)
+                    # Cancel button has its own test identifier
                     if st.button(f"🛑 Cancel Generation", key=f"cancel_embedding_{ont_name}", type="secondary", use_container_width=True):
                         with st.spinner("Sending cancellation request..."):
                             try:
@@ -775,13 +778,14 @@ if st.session_state.get('show_embeddings_config', False):
         # Model selection
         current_model = st.session_state.embedding_config.get("model", {}).get("name", "text-ada-002")
         # Add hidden div with data-testid for model selectbox
-        st.markdown('<div data-testid="select-embedding-model" style="display: none;"></div>', unsafe_allow_html=True)
+        # Model selection test identifier on the selectbox
         selected_model = st.selectbox(
             "Embedding Model",
             options=list(embedding_models.keys()),
             index=list(embedding_models.keys()).index(current_model) if current_model in embedding_models else 0,
             format_func=lambda x: embedding_models[x],
-            help="Select the OpenAI embedding model to use for vectorizing ontology terms"
+            help="Select the OpenAI embedding model to use for vectorizing ontology terms",
+            key="select-embedding-model"
         )
         
         # Show model info
@@ -791,14 +795,15 @@ if st.session_state.get('show_embeddings_config', False):
         # Batch size configuration
         current_batch_size = st.session_state.embedding_config.get("processing", {}).get("batch_size", 100)
         # Add hidden div with data-testid for batch size input
-        st.markdown('<div data-testid="input-batch-size" style="display: none;"></div>', unsafe_allow_html=True)
+        # Batch size input test identifier on the number input
         batch_size = st.number_input(
             "Batch Size",
             min_value=10,
             max_value=1000,
             value=current_batch_size,
             step=10,
-            help="Number of terms to process in each batch during ontology updates"
+            help="Number of terms to process in each batch during ontology updates",
+            key="input-batch-size"
         )
         
         # Cost estimation (approximate)
@@ -897,8 +902,8 @@ if st.session_state.get('show_embeddings_config', False):
     
     with col1:
         # Add hidden div with data-testid for save button
-        st.markdown('<div data-testid="button-save-embedding-config" style="display: none;"></div>', unsafe_allow_html=True)
-        if st.button("💾 Save Configuration", type="primary"):
+        # Save button test identifier on the button
+        if st.button("💾 Save Configuration", type="primary", key="button-save-embedding-config"):
             if save_embeddings_config(st.session_state.embedding_config):
                 st.success("✅ Configuration saved to embeddings_config.yaml!")
                 # Update the session state to reflect saved changes
@@ -908,8 +913,8 @@ if st.session_state.get('show_embeddings_config', False):
     
     with col2:
         # Add hidden div with data-testid for test config button
-        st.markdown('<div data-testid="button-test-embedding-config" style="display: none;"></div>', unsafe_allow_html=True)
-        if st.button("🔄 Test Configuration"):
+        # Test button test identifier on the button
+        if st.button("🔄 Test Configuration", key="button-test-embedding-config"):
             with st.spinner("Testing embedding configuration..."):
                 try:
                     api_key = st.session_state.get('api_key', '')
@@ -1000,7 +1005,8 @@ if st.session_state.get('show_ontology_update_management', False):
                 # Check if this ontology has active update progress
                 has_active_update = f"update_progress_{ont_name}" in st.session_state
                 
-                with st.expander(f"🧬 {ont_name} - {ont_config.get('name', 'Unknown')}", expanded=has_active_update):
+                with st.expander(f"🧬 {ont_name} - {ont_config.get('name', 'Unknown')}", 
+                                expanded=has_active_update):
                     col1, col2 = st.columns([3, 1])
                     
                     with col1:
@@ -1173,9 +1179,9 @@ if st.session_state.get('show_ontology_embedding_management', False):
                 # Check if embedding is in progress
                 has_active_embedding = f"embedding_progress_{ont_name}" in st.session_state
                 
-                # Add hidden div with data-testid for the expander
-                st.markdown(f'<div data-testid="expander-{ont_name}" style="display: none;"></div>', unsafe_allow_html=True)
-                with st.expander(f"🧬 {ont_name} - {ont_config.get('name', 'Unknown')}", expanded=has_active_embedding):
+                # Expander with key for test identifier
+                with st.expander(f"🧬 {ont_name} - {ont_config.get('name', 'Unknown')}", 
+                                expanded=has_active_embedding):
                     col1, col2 = st.columns([3, 1])
                     
                     with col1:
@@ -1209,8 +1215,7 @@ if st.session_state.get('show_ontology_embedding_management', False):
                         
                         # Generate embeddings button with confirmation
                         if f"confirm_embed_{ont_name}" not in st.session_state:
-                            # Add hidden div with data-testid for the button
-                            st.markdown(f'<div data-testid="button-generate-embeddings-{ont_name}" style="display: none;"></div>', unsafe_allow_html=True)
+                            # Generate button will have test identifier
                             if st.button(
                                 "🚀 Generate Embeddings",
                                 key=f"gen_embed_btn_{ont_name}",

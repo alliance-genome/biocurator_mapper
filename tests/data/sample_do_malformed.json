@@ -1,0 +1,121 @@
+{
+  "graphs": [
+    {
+      "id": "http://purl.obolibrary.org/obo/doid.owl",
+      "nodes": [
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_9999001",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Term missing required 'lbl' field for testing error handling.",
+              "xrefs": []
+            },
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "lbl": "term missing id field",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Term missing required 'id' field for testing error handling.",
+              "xrefs": []
+            },
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_9999003",
+          "lbl": "term with malformed meta",
+          "type": "CLASS",
+          "meta": "invalid_meta_structure"
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_9999004",
+          "lbl": "term with malformed definition",
+          "type": "CLASS",
+          "meta": {
+            "definition": "string_instead_of_object",
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_9999005",
+          "lbl": "term with malformed synonyms",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Term with malformed synonym structure for testing robustness.",
+              "xrefs": []
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym"
+              },
+              {
+                "val": "synonym without predicate"
+              },
+              "string_instead_of_object",
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "valid synonym",
+                "xrefs": []
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_9999006",
+          "lbl": "term with malformed xrefs",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Term with malformed xref structure.",
+              "xrefs": [
+                123,
+                null,
+                {"invalid": "structure"}
+              ]
+            },
+            "xrefs": [
+              "string_instead_of_object",
+              123,
+              null,
+              {
+                "val": "VALID:12345"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

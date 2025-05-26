@@ -50,11 +50,23 @@ def extract_cross_references(node: Dict) -> List[str]:
     if isinstance(definition, dict) and "xrefs" in definition:
         xrefs.extend(definition["xrefs"])
     
+    # Check main xrefs section in meta
+    meta_xrefs = meta.get("xrefs", [])
+    for xref in meta_xrefs:
+        if isinstance(xref, dict) and "val" in xref:
+            val = xref["val"]
+            if val:  # Only add non-empty values
+                xrefs.append(val)
+        elif isinstance(xref, str) and xref:  # Only add non-empty strings
+            xrefs.append(xref)
+    
     # Check for other xref sources in basicPropertyValues
     basic_props = meta.get("basicPropertyValues", [])
     for prop in basic_props:
         if "hasDbXref" in prop.get("pred", ""):
-            xrefs.append(prop.get("val", ""))
+            val = prop.get("val", "")
+            if val:  # Only add non-empty values
+                xrefs.append(val)
     
     return xrefs
 

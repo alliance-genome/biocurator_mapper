@@ -1,0 +1,338 @@
+PRODUCT REQUIREMENTS DOCUMENT (PRD)
+=====================================
+BioCurator Mapper - DO (Disease Ontology) Embeddings Functionality
+Version 2.0
+Date: January 26, 2025
+
+EXECUTIVE SUMMARY
+-----------------
+This PRD outlines the requirements for implementing a robust embeddings system specifically for Disease Ontology (DO) annotations in the BioCurator Mapper application. The system will generate semantic embeddings for disease terms to enable accurate semantic search and matching capabilities for disease-related biocuration tasks.
+
+PROBLEM STATEMENT
+-----------------
+Current Issues:
+1. DO-specific synonym data (exact_synonyms, narrow_synonyms, broad_synonyms) is not being utilized in embedding generation
+2. The _extract_enhanced_term_data method creates empty synonym arrays instead of using parsed DO data
+3. Missing integration between DO term extraction and embedding generation for diseases
+4. Incomplete test coverage for DO-specific embeddings functionality
+5. Lack of end-to-end validation for the complete DO embeddings pipeline
+
+Business Impact:
+- Reduced accuracy in disease term matching due to missing DO synonym information
+- Incomplete searchable text representation of disease terms
+- Potential for false negatives when matching disease annotations
+- Degraded curator experience in finding related disease terms
+- Missed disease associations in biocuration workflows
+
+OBJECTIVES
+----------
+1. Fix data flow between DO parser and embedding generation
+2. Ensure all DO term metadata (name, definition, synonyms) is included in embeddings
+3. Implement comprehensive testing strategy for DO-specific functionality
+4. Create robust error handling and recovery mechanisms
+5. Provide clear troubleshooting documentation for DO embeddings
+
+FUNCTIONAL REQUIREMENTS
+-----------------------
+
+### 1. DO Data Extraction and Processing
+- MUST properly extract DO term data from parsed DO.json files including:
+  - DOID (Disease Ontology ID)
+  - Disease name
+  - Definition (text definition)
+  - Exact synonyms (alternative names)
+  - Narrow synonyms (more specific terms)
+  - Broad synonyms (more general terms)
+  - Related synonyms
+  - All synonyms (aggregated list)
+- MUST handle DO-specific data structures and formatting
+- MUST build searchable text optimized for disease term matching
+- MUST respect field selection from embeddings_config.yaml
+
+### 2. DO-Optimized Embedding Generation
+- MUST use context7 MCP to check latest OpenAI API documentation before implementation
+- MUST support OpenAI embedding models appropriate for biomedical text:
+  - text-embedding-3-small (cost-effective option)
+  - text-embedding-3-large (higher accuracy option)
+- MUST implement batch processing optimized for DO dataset size (~20,000 terms)
+- MUST handle rate limiting with DO-specific retry strategies
+- MUST provide mechanism for incremental updates as DO evolves
+
+### 3. DO Vector Storage
+- MUST integrate with Weaviate for DO term vector storage
+- MUST create DO-specific schema with all disease metadata fields
+- MUST support efficient retrieval of disease terms by vector similarity
+- MUST maintain linkage between DOID and embeddings
+
+### 4. DO Embeddings Progress Tracking
+- MUST provide real-time progress for DO term processing
+- MUST track DO-specific metrics:
+  - Total disease terms to process
+  - Disease terms with complete synonym data
+  - Disease terms missing definitions
+  - Processing rate (disease terms/second)
+  - Coverage of DO hierarchy levels
+- MUST support resume for interrupted DO processing
+
+### 5. DO Configuration Management
+- MUST support DO-specific settings in embeddings_config.yaml:
+  ```yaml
+  disease_ontology:
+    include_deprecated: false
+    synonym_weights:
+      exact: 1.0
+      narrow: 0.8
+      broad: 0.6
+    definition_weight: 1.0
+    hierarchy_depth: 3
+  ```
+
+TECHNICAL SPECIFICATIONS
+------------------------
+
+### 1. DO-Specific Components
+
+#### DO Term Data Extraction
+```python
+def _extract_do_term_data(self, do_term: Dict) -> Dict:
+    """Extract all fields from parsed DO term data."""
+    return {
+        "doid": do_term.get("id", ""),
+        "name": do_term.get("name", ""),
+        "definition": do_term.get("def", {}).get("val", ""),
+        "exact_synonyms": [s["val"] for s in do_term.get("synonym", []) 
+                          if s.get("pred") == "hasExactSynonym"],
+        "narrow_synonyms": [s["val"] for s in do_term.get("synonym", []) 
+                           if s.get("pred") == "hasNarrowSynonym"],
+        "broad_synonyms": [s["val"] for s in do_term.get("synonym", []) 
+                          if s.get("pred") == "hasBroadSynonym"],
+        "related_synonyms": [s["val"] for s in do_term.get("synonym", []) 
+                            if s.get("pred") == "hasRelatedSynonym"],
+        "xrefs": do_term.get("xref", []),
+        "is_obsolete": do_term.get("is_obsolete", False),
+        "searchable_text": ""  # Built by _build_do_searchable_text
+    }
+```
+
+#### DO Searchable Text Builder
+- Weight synonyms based on type (exact > narrow > broad)
+- Include cross-references for comprehensive matching
+- Handle medical abbreviations and acronyms
+- Normalize disease naming conventions
+
+### 2. DO-Specific Error Handling
+- Handle malformed DO.json entries
+- Manage deprecated/obsolete disease terms
+- Handle missing definitions gracefully
+- Validate DOID format (DOID:NNNNNNN)
+
+### 3. DO Performance Requirements
+- Process entire DO (~20,000 terms) in under 30 minutes
+- Support incremental updates for new DO releases
+- Memory usage optimized for DO dataset size
+- Maintain embedding quality for medical terminology
+
+TESTING REQUIREMENTS
+--------------------
+
+### Unit Tests
+
+1. **DO Data Extraction Tests** (test_do_embeddings_extraction.py)
+   - Test extraction of all DO synonym types
+   - Verify handling of missing definitions
+   - Test obsolete term filtering
+   - Validate DOID format preservation
+
+2. **DO Searchable Text Tests** (test_do_searchable_text.py)
+   - Test synonym weighting logic
+   - Verify medical abbreviation handling
+   - Test text normalization for diseases
+   - Validate character encoding for special terms
+
+3. **DO Batch Processing Tests** (test_do_batch_processing.py)
+   - Test with typical DO batch sizes
+   - Verify memory usage stays within limits
+   - Test resume functionality for DO dataset
+   - Validate progress tracking accuracy
+
+### Integration Tests
+
+1. **DO Parser Integration** (test_do_parser_integration.py)
+   - Test complete DO.json parsing
+   - Verify all synonym types extracted
+   - Test with real DO data samples
+   - Validate xref extraction
+
+2. **OpenAI API Integration for DO** (test_do_openai_integration.py)
+   - MUST use context7 MCP to verify current API behavior
+   - Test with medical/disease terminology
+   - Verify embedding quality for synonyms
+   - Test rate limit handling for DO dataset size
+
+### End-to-End Tests
+
+1. **Complete DO Pipeline Test** (test_e2e_do_pipeline.py)
+   ```python
+   def test_complete_do_embeddings_pipeline():
+       # 1. Load DO.json file
+       # 2. Parse disease terms with full synonym extraction
+       # 3. Generate embeddings for subset of diseases
+       # 4. Store in Weaviate with DO schema
+       # 5. Verify searchable text includes all synonym types
+       # 6. Test semantic search for disease terms
+       # 7. Validate synonym-based matching works
+   ```
+
+2. **DO UI Integration Test** (Using Playwright MCP)
+   ```python
+   def test_do_embeddings_ui_workflow():
+       # IMPORTANT: Use Playwright MCP for browser automation
+       # 1. Navigate to DO embeddings section
+       # 2. Verify DO-specific configuration display
+       # 3. Upload/select DO.json file
+       # 4. Start DO embedding generation
+       # 5. Monitor progress with DO metrics
+       # 6. Verify completion and statistics
+       # 7. Test search functionality with disease names
+   ```
+
+3. **DO Search Quality Test**
+   ```python
+   def test_do_search_quality():
+       # Test cases for common disease search scenarios:
+       # 1. Search "cancer" → finds all cancer types
+       # 2. Search "diabetes" → finds Type 1, Type 2, gestational
+       # 3. Search abbreviations → "ALS" finds "amyotrophic lateral sclerosis"
+       # 4. Search by synonym → "Lou Gehrig's disease" finds ALS
+       # 5. Search rare diseases by alternate names
+   ```
+
+TROUBLESHOOTING GUIDE
+---------------------
+
+### DO-Specific Issues
+
+1. **Missing Disease Synonyms**
+   - Check: DO.json structure for synonym fields
+   - Verify: Synonym predicates (hasExactSynonym, etc.)
+   - Solution: Update parser to handle DO format changes
+
+2. **Poor Disease Match Quality**
+   - Check: Synonym weighting configuration
+   - Verify: All synonym types included in searchable text
+   - Solution: Adjust weights, include more synonym types
+
+3. **DO File Parsing Errors**
+   - Check: DO.json file validity
+   - Verify: Expected DO schema version
+   - Solution: Update parser for new DO format
+
+4. **Medical Term Encoding Issues**
+   - Check: Special characters in disease names
+   - Verify: UTF-8 encoding throughout pipeline
+   - Solution: Normalize text encoding
+
+### DO Validation Checklist
+
+1. **Pre-Generation**
+   - [ ] DO.json downloaded and valid
+   - [ ] All synonym types detected in sample
+   - [ ] Medical abbreviations handled correctly
+   - [ ] Obsolete terms filtered if configured
+
+2. **Post-Generation**
+   - [ ] All non-obsolete diseases have embeddings
+   - [ ] Synonym-based search works correctly
+   - [ ] Medical abbreviations searchable
+   - [ ] Cross-references preserved
+
+IMPLEMENTATION GUIDE
+--------------------
+
+### Phase 1: DO Data Integration (Priority: CRITICAL)
+1. Fix _extract_enhanced_term_data for DO format
+2. Implement DO-specific synonym extraction
+3. Add DO schema validation
+
+### Phase 2: DO Testing Suite (Priority: HIGH)
+1. Create DO-specific unit tests
+2. Implement integration tests using context7 MCP for API verification
+3. Build Playwright tests using Playwright MCP
+
+### Phase 3: DO Search Optimization (Priority: MEDIUM)
+1. Tune synonym weights for medical terms
+2. Add medical abbreviation expansion
+3. Implement fuzzy matching for disease names
+
+### Phase 4: DO Maintenance Tools (Priority: LOW)
+1. DO version change detection
+2. Incremental update support
+3. Embedding quality metrics for diseases
+
+API IMPLEMENTATION NOTES
+------------------------
+
+When implementing OpenAI API integration:
+1. **MUST use context7 MCP** to check latest OpenAI embeddings API documentation
+2. Verify current model names and capabilities
+3. Check current rate limits and pricing
+4. Confirm batch size recommendations
+5. Review any new best practices for biomedical text
+
+When implementing Playwright tests:
+1. **MUST use Playwright MCP** for all browser automation
+2. Follow current Playwright best practices
+3. Use proper selectors for Streamlit components
+4. Implement proper wait strategies
+
+MONITORING AND METRICS
+----------------------
+
+### DO-Specific KPIs
+1. Disease term coverage (target: >99% non-obsolete terms)
+2. Synonym inclusion rate (target: 100%)
+3. Search accuracy for common diseases (target: >95%)
+4. Search accuracy for rare diseases (target: >90%)
+5. Medical abbreviation recognition (target: >95%)
+
+SUCCESS CRITERIA
+----------------
+
+1. All active DO terms have embeddings with complete synonym data
+2. Disease search returns relevant results for all synonym types
+3. Medical abbreviations are properly matched
+4. Cross-disease relationships are discoverable
+5. System handles DO updates gracefully
+6. Performance meets targets for full DO processing
+
+FUTURE ENHANCEMENTS
+-------------------
+
+1. Integration with other disease ontologies (MONDO, Orphanet)
+2. Disease hierarchy-aware embeddings
+3. Phenotype-disease association embeddings
+4. Multi-language disease term support
+5. Clinical variant name handling
+
+APPENDIX: DO-SPECIFIC DETAILS
+-----------------------------
+
+### DO File Structure
+- DO.json contains disease terms in OBO JSON format
+- Synonym predicates: hasExactSynonym, hasNarrowSynonym, hasBroadSynonym, hasRelatedSynonym
+- Cross-references link to other databases (MESH, ICD, OMIM)
+- Hierarchical structure with is_a relationships
+
+### Key DO Methods to Implement
+1. _extract_do_term_data() - Extract DO-specific fields
+2. _build_do_searchable_text() - Build weighted text for diseases
+3. _handle_medical_abbreviations() - Expand medical acronyms
+4. generate_do_embeddings() - DO-optimized embedding generation
+
+### Testing Data
+- Use DO subset for rapid testing (~100 common diseases)
+- Include edge cases: rare diseases, deprecated terms, complex synonyms
+- Test with real curator queries from biocuration workflows
+
+END OF PRD
+==========

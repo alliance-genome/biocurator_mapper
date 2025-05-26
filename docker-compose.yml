@@ -9,6 +9,7 @@ services:
       - DEFAULT_VECTORIZER_MODULE=text2vec-openai
       - ENABLE_MODULES=text2vec-openai
       - LOG_LEVEL=info
+      - OPENAI_APIKEY=${OPENAI_API_KEY:-}
     ports:
       - "8080:8080"
     volumes:

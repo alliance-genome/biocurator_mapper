@@ -1,0 +1,9 @@
+{
+  "invalid_structure": "missing_graphs_key",
+  "data": [
+    {
+      "id": "DOID:0000001",
+      "name": "disease"
+    }
+  ]
+}

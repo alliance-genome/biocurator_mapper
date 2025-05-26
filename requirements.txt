@@ -16,3 +16,6 @@ pytest-cov
 pytest-playwright
 playwright
 httpx
+tenacity
+pydantic
+dataclasses

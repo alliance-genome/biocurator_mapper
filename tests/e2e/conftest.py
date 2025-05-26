@@ -2,6 +2,10 @@
 import pytest
 from playwright.sync_api import sync_playwright
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 @pytest.fixture(scope="session")
@@ -38,5 +42,12 @@ def api_url():
 
 @pytest.fixture(scope="session")
 def admin_api_key():
-    """Get the admin API key."""
-    return os.getenv("ADMIN_API_KEY", "test-admin-key")
+    """Get the admin API key from environment variables.
+    
+    First tries to get from ADMIN_API_KEY env var (which includes .env file).
+    Falls back to a placeholder if not found (tests will fail with invalid key).
+    """
+    api_key = os.getenv("ADMIN_API_KEY")
+    if not api_key:
+        pytest.skip("ADMIN_API_KEY not found in environment variables or .env file")
+    return api_key

@@ -1,0 +1,8 @@
+pytest
+pytest-mock
+pytest-cov
+pytest-asyncio
+mypy
+ruff
+pydantic
+dataclasses

@@ -1,0 +1,227 @@
+{
+  "graphs": [
+    {
+      "id": "http://purl.obolibrary.org/obo/doid.owl",
+      "nodes": [
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_0000000",
+          "lbl": "minimal term",
+          "type": "CLASS",
+          "meta": {
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_0000002",
+          "lbl": "term with empty definition",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "",
+              "xrefs": []
+            },
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_0000003",
+          "lbl": "term with empty synonyms",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "A term with empty synonym values for testing edge cases.",
+              "xrefs": []
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "valid synonym",
+                "xrefs": []
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_0000004",
+          "lbl": "obsolete disease term",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "This term is obsolete and should be filtered out in quality checks.",
+              "xrefs": []
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym", 
+                "val": "deprecated condition",
+                "xrefs": []
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              },
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#deprecated",
+                "val": "true"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_0000005",
+          "lbl": "unicode test disease ñáéíóú",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "A disease term with unicode characters: ñáéíóú αβγδε 中文 العربية ру́сский to test encoding handling.",
+              "xrefs": []
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "síndrome especial",
+                "xrefs": []
+              },
+              {
+                "pred": "hasExactSynonym",
+                "val": "특별한 질병",
+                "xrefs": []
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_0000006",
+          "lbl": "term with malformed xrefs",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "A term with various malformed cross-references for testing robustness.",
+              "xrefs": [
+                "",
+                "invalid-format",
+                "MESH:",
+                ":C1234567",
+                "VALID:12345"
+              ]
+            },
+            "xrefs": [
+              {
+                "val": ""
+              },
+              {
+                "val": "MESH:"
+              },
+              {
+                "val": "VALID:67890"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_0000007",
+          "lbl": "very long disease name that exceeds normal length expectations and continues for an extraordinarily extended period to test text processing limits and truncation behavior in various system components",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "This is an extremely long definition that goes on and on and on to test how the system handles very lengthy text content that might exceed normal database field lengths or cause memory issues during processing. It includes multiple sentences with various punctuation marks, special characters (!@#$%^&*), and continues to extend beyond reasonable limits to ensure robust handling of edge cases in text processing, embedding generation, and storage systems. The definition intentionally exceeds typical lengths to validate system robustness.",
+              "xrefs": []
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "extremely lengthy medical condition name that also exceeds normal expectations",
+                "xrefs": []
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_0000008",
+          "lbl": "term with all synonym types",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "A comprehensive test term that includes all possible synonym types for complete testing coverage.",
+              "xrefs": []
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact match synonym",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow specific synonym",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym", 
+                "val": "broad general synonym",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related associated synonym",
+                "xrefs": []
+              },
+              {
+                "pred": "hasUnknownSynonym",
+                "val": "unknown synonym type",
+                "xrefs": []
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

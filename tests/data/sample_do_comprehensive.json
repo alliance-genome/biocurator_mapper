@@ -1,0 +1,305 @@
+{
+  "graphs": [
+    {
+      "id": "http://purl.obolibrary.org/obo/doid.owl",
+      "meta": {
+        "basicPropertyValues": [
+          {
+            "pred": "http://purl.org/dc/terms/description",
+            "val": "The Disease Ontology has been developed as a standardized ontology for human disease with the purpose of providing the biomedical community with consistent, reusable and sustainable descriptions of human disease terms, phenotype characteristics and related medical vocabulary disease concepts."
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_0001816",
+          "lbl": "angiosarcoma",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "A malignant vascular tumor that results_in rapidly proliferating, extensively infiltrating anaplastic cells derived_from blood vessels and derived_from the lining of irregular blood-filled spaces.",
+              "xrefs": [
+                "url:http://en.wikipedia.org/wiki/Hemangiosarcoma",
+                "url:http://ncit.nci.nih.gov/ncitbrowser/ConceptReport.jsp?dictionary=NCI_Thesaurus&version=14.10d&code=C3088"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "hemangiosarcoma",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym", 
+                "val": "malignant hemangioendothelioma",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "epithelioid angiosarcoma",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D006394"
+              },
+              {
+                "val": "NCI:C3088"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:33176006"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              },
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasDbXref",
+                "val": "UMLS_CUI:C0018923"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_14566",
+          "lbl": "disease of cellular proliferation",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "A disease that is characterized by abnormally rapid cell division.",
+              "xrefs": [
+                "url:http://en.wikipedia.org/wiki/Cell_proliferation"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "proliferative disease",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "hyperplastic disease",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "SNOMEDCT_US_2023_03_01:64572001"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace", 
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_9352",
+          "lbl": "type 2 diabetes mellitus",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "A diabetes mellitus that is characterized by insulin resistance or desensitization and increased blood glucose concentration.",
+              "xrefs": [
+                "url:http://en.wikipedia.org/wiki/Diabetes_mellitus_type_2"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "Type II diabetes mellitus",
+                "xrefs": []
+              },
+              {
+                "pred": "hasExactSynonym", 
+                "val": "diabetes mellitus type 2",
+                "xrefs": []
+              },
+              {
+                "pred": "hasExactSynonym",
+                "val": "non-insulin dependent diabetes mellitus",
+                "xrefs": []
+              },
+              {
+                "pred": "hasExactSynonym",
+                "val": "NIDDM",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "adult-onset diabetes",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "maturity-onset diabetes of the young",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "ICD10CM:E11"
+              },
+              {
+                "val": "ICD9CM:250.00"
+              },
+              {
+                "val": "MESH:D003924"
+              },
+              {
+                "val": "NCI:C26747"
+              },
+              {
+                "val": "OMIM:125853"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:44054006"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              },
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasDbXref",
+                "val": "UMLS_CUI:C0011860"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_0080600",
+          "lbl": "COVID-19",
+          "type": "CLASS", 
+          "meta": {
+            "definition": {
+              "val": "A viral infectious disease that results_in infection located_in respiratory tract, has_material_basis_in SARS-CoV-2, which is transmitted_by droplet transmission, and transmitted_by fomite transmission.",
+              "xrefs": [
+                "url:https://www.who.int/emergencies/diseases/novel-coronavirus-2019"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "coronavirus disease 2019",
+                "xrefs": []
+              },
+              {
+                "pred": "hasExactSynonym",
+                "val": "2019-nCoV disease",
+                "xrefs": []
+              },
+              {
+                "pred": "hasExactSynonym",
+                "val": "SARS-CoV-2 infection",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "novel coronavirus pneumonia",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "ICD10CM:U07.1"
+              },
+              {
+                "val": "MESH:C000657245"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:840539006"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_0001067",
+          "lbl": "open-angle glaucoma",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "A glaucoma characterized by optic nerve damage resulting in progressive loss of visual field and increased pressure in the eye due to trabecular blockade that develops slowly and is generally asymptomatic.",
+              "xrefs": [
+                "url:http://en.wikipedia.org/wiki/Glaucoma"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "chronic simple glaucoma",
+                "xrefs": []
+              },
+              {
+                "pred": "hasExactSynonym",
+                "val": "primary open angle glaucoma",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "chronic glaucoma",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "ICD10CM:H40.1"
+              },
+              {
+                "val": "MESH:D005902"
+              },
+              {
+                "val": "NCI:C26702"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:84494001"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              },
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasDbXref",
+                "val": "UMLS_CUI:C0017612"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_0000001",
+          "lbl": "disease",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "A disposition to undergo pathological processes that exists in an organism because of one or more disorders in that organism.",
+              "xrefs": [
+                "url:http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C2991"
+              ]
+            },
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

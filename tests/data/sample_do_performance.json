@@ -1,0 +1,5209 @@
+{
+  "graphs": [
+    {
+      "id": "http://purl.obolibrary.org/obo/doid.owl",
+      "nodes": [
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000000",
+          "lbl": "performance test disease 0000",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0000 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0000"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0000",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0000",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0000",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0000",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000000"
+              },
+              {
+                "val": "ICD10CM:Z00.0"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100000"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000001",
+          "lbl": "performance test disease 0001",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0001 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0001"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0001",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0001",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0001",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0001",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000001"
+              },
+              {
+                "val": "ICD10CM:Z01.1"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100001"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000002",
+          "lbl": "performance test disease 0002",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0002 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0002"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0002",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0002",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0002",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0002",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000002"
+              },
+              {
+                "val": "ICD10CM:Z02.2"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100002"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000003",
+          "lbl": "performance test disease 0003",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0003 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0003"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0003",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0003",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0003",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0003",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000003"
+              },
+              {
+                "val": "ICD10CM:Z03.3"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100003"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000004",
+          "lbl": "performance test disease 0004",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0004 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0004"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0004",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0004",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0004",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0004",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000004"
+              },
+              {
+                "val": "ICD10CM:Z04.4"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100004"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000005",
+          "lbl": "performance test disease 0005",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0005 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0005"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0005",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0005",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0005",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0005",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000005"
+              },
+              {
+                "val": "ICD10CM:Z05.5"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100005"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000006",
+          "lbl": "performance test disease 0006",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0006 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0006"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0006",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0006",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0006",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0006",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000006"
+              },
+              {
+                "val": "ICD10CM:Z06.6"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100006"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000007",
+          "lbl": "performance test disease 0007",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0007 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0007"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0007",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0007",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0007",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0007",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000007"
+              },
+              {
+                "val": "ICD10CM:Z07.7"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100007"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000008",
+          "lbl": "performance test disease 0008",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0008 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0008"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0008",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0008",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0008",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0008",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000008"
+              },
+              {
+                "val": "ICD10CM:Z08.8"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100008"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000009",
+          "lbl": "performance test disease 0009",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0009 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0009"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0009",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0009",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0009",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0009",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000009"
+              },
+              {
+                "val": "ICD10CM:Z09.9"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100009"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000010",
+          "lbl": "performance test disease 0010",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0010 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0010"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0010",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0010",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0010",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0010",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000010"
+              },
+              {
+                "val": "ICD10CM:Z10.0"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100010"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000011",
+          "lbl": "performance test disease 0011",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0011 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0011"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0011",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0011",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0011",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0011",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000011"
+              },
+              {
+                "val": "ICD10CM:Z11.1"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100011"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000012",
+          "lbl": "performance test disease 0012",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0012 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0012"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0012",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0012",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0012",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0012",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000012"
+              },
+              {
+                "val": "ICD10CM:Z12.2"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100012"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000013",
+          "lbl": "performance test disease 0013",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0013 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0013"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0013",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0013",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0013",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0013",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000013"
+              },
+              {
+                "val": "ICD10CM:Z13.3"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100013"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000014",
+          "lbl": "performance test disease 0014",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0014 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0014"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0014",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0014",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0014",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0014",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000014"
+              },
+              {
+                "val": "ICD10CM:Z14.4"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100014"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000015",
+          "lbl": "performance test disease 0015",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0015 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0015"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0015",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0015",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0015",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0015",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000015"
+              },
+              {
+                "val": "ICD10CM:Z15.5"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100015"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000016",
+          "lbl": "performance test disease 0016",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0016 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0016"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0016",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0016",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0016",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0016",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000016"
+              },
+              {
+                "val": "ICD10CM:Z16.6"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100016"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000017",
+          "lbl": "performance test disease 0017",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0017 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0017"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0017",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0017",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0017",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0017",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000017"
+              },
+              {
+                "val": "ICD10CM:Z17.7"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100017"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000018",
+          "lbl": "performance test disease 0018",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0018 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0018"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0018",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0018",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0018",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0018",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000018"
+              },
+              {
+                "val": "ICD10CM:Z18.8"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100018"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000019",
+          "lbl": "performance test disease 0019",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0019 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0019"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0019",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0019",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0019",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0019",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000019"
+              },
+              {
+                "val": "ICD10CM:Z19.9"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100019"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000020",
+          "lbl": "performance test disease 0020",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0020 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0020"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0020",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0020",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0020",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0020",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000020"
+              },
+              {
+                "val": "ICD10CM:Z20.0"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100020"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000021",
+          "lbl": "performance test disease 0021",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0021 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0021"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0021",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0021",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0021",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0021",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000021"
+              },
+              {
+                "val": "ICD10CM:Z21.1"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100021"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000022",
+          "lbl": "performance test disease 0022",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0022 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0022"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0022",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0022",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0022",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0022",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000022"
+              },
+              {
+                "val": "ICD10CM:Z22.2"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100022"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000023",
+          "lbl": "performance test disease 0023",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0023 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0023"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0023",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0023",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0023",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0023",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000023"
+              },
+              {
+                "val": "ICD10CM:Z23.3"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100023"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000024",
+          "lbl": "performance test disease 0024",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0024 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0024"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0024",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0024",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0024",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0024",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000024"
+              },
+              {
+                "val": "ICD10CM:Z24.4"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100024"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000025",
+          "lbl": "performance test disease 0025",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0025 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0025"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0025",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0025",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0025",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0025",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000025"
+              },
+              {
+                "val": "ICD10CM:Z25.5"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100025"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000026",
+          "lbl": "performance test disease 0026",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0026 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0026"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0026",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0026",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0026",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0026",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000026"
+              },
+              {
+                "val": "ICD10CM:Z26.6"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100026"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000027",
+          "lbl": "performance test disease 0027",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0027 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0027"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0027",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0027",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0027",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0027",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000027"
+              },
+              {
+                "val": "ICD10CM:Z27.7"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100027"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000028",
+          "lbl": "performance test disease 0028",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0028 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0028"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0028",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0028",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0028",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0028",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000028"
+              },
+              {
+                "val": "ICD10CM:Z28.8"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100028"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000029",
+          "lbl": "performance test disease 0029",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0029 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0029"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0029",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0029",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0029",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0029",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000029"
+              },
+              {
+                "val": "ICD10CM:Z29.9"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100029"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000030",
+          "lbl": "performance test disease 0030",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0030 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0030"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0030",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0030",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0030",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0030",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000030"
+              },
+              {
+                "val": "ICD10CM:Z30.0"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100030"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000031",
+          "lbl": "performance test disease 0031",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0031 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0031"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0031",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0031",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0031",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0031",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000031"
+              },
+              {
+                "val": "ICD10CM:Z31.1"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100031"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000032",
+          "lbl": "performance test disease 0032",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0032 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0032"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0032",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0032",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0032",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0032",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000032"
+              },
+              {
+                "val": "ICD10CM:Z32.2"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100032"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000033",
+          "lbl": "performance test disease 0033",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0033 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0033"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0033",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0033",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0033",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0033",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000033"
+              },
+              {
+                "val": "ICD10CM:Z33.3"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100033"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000034",
+          "lbl": "performance test disease 0034",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0034 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0034"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0034",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0034",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0034",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0034",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000034"
+              },
+              {
+                "val": "ICD10CM:Z34.4"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100034"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000035",
+          "lbl": "performance test disease 0035",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0035 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0035"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0035",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0035",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0035",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0035",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000035"
+              },
+              {
+                "val": "ICD10CM:Z35.5"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100035"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000036",
+          "lbl": "performance test disease 0036",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0036 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0036"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0036",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0036",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0036",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0036",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000036"
+              },
+              {
+                "val": "ICD10CM:Z36.6"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100036"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000037",
+          "lbl": "performance test disease 0037",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0037 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0037"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0037",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0037",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0037",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0037",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000037"
+              },
+              {
+                "val": "ICD10CM:Z37.7"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100037"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000038",
+          "lbl": "performance test disease 0038",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0038 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0038"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0038",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0038",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0038",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0038",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000038"
+              },
+              {
+                "val": "ICD10CM:Z38.8"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100038"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000039",
+          "lbl": "performance test disease 0039",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0039 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0039"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0039",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0039",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0039",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0039",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000039"
+              },
+              {
+                "val": "ICD10CM:Z39.9"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100039"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000040",
+          "lbl": "performance test disease 0040",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0040 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0040"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0040",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0040",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0040",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0040",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000040"
+              },
+              {
+                "val": "ICD10CM:Z40.0"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100040"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000041",
+          "lbl": "performance test disease 0041",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0041 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0041"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0041",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0041",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0041",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0041",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000041"
+              },
+              {
+                "val": "ICD10CM:Z41.1"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100041"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000042",
+          "lbl": "performance test disease 0042",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0042 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0042"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0042",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0042",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0042",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0042",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000042"
+              },
+              {
+                "val": "ICD10CM:Z42.2"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100042"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000043",
+          "lbl": "performance test disease 0043",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0043 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0043"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0043",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0043",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0043",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0043",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000043"
+              },
+              {
+                "val": "ICD10CM:Z43.3"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100043"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000044",
+          "lbl": "performance test disease 0044",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0044 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0044"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0044",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0044",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0044",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0044",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000044"
+              },
+              {
+                "val": "ICD10CM:Z44.4"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100044"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000045",
+          "lbl": "performance test disease 0045",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0045 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0045"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0045",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0045",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0045",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0045",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000045"
+              },
+              {
+                "val": "ICD10CM:Z45.5"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100045"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000046",
+          "lbl": "performance test disease 0046",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0046 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0046"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0046",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0046",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0046",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0046",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000046"
+              },
+              {
+                "val": "ICD10CM:Z46.6"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100046"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000047",
+          "lbl": "performance test disease 0047",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0047 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0047"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0047",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0047",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0047",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0047",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000047"
+              },
+              {
+                "val": "ICD10CM:Z47.7"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100047"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000048",
+          "lbl": "performance test disease 0048",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0048 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0048"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0048",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0048",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0048",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0048",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000048"
+              },
+              {
+                "val": "ICD10CM:Z48.8"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100048"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000049",
+          "lbl": "performance test disease 0049",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0049 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0049"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0049",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0049",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0049",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0049",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000049"
+              },
+              {
+                "val": "ICD10CM:Z49.9"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100049"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000050",
+          "lbl": "performance test disease 0050",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0050 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0050"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0050",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0050",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0050",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0050",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000050"
+              },
+              {
+                "val": "ICD10CM:Z50.0"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100050"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000051",
+          "lbl": "performance test disease 0051",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0051 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0051"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0051",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0051",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0051",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0051",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000051"
+              },
+              {
+                "val": "ICD10CM:Z51.1"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100051"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000052",
+          "lbl": "performance test disease 0052",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0052 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0052"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0052",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0052",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0052",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0052",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000052"
+              },
+              {
+                "val": "ICD10CM:Z52.2"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100052"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000053",
+          "lbl": "performance test disease 0053",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0053 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0053"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0053",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0053",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0053",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0053",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000053"
+              },
+              {
+                "val": "ICD10CM:Z53.3"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100053"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000054",
+          "lbl": "performance test disease 0054",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0054 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0054"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0054",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0054",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0054",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0054",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000054"
+              },
+              {
+                "val": "ICD10CM:Z54.4"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100054"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000055",
+          "lbl": "performance test disease 0055",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0055 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0055"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0055",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0055",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0055",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0055",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000055"
+              },
+              {
+                "val": "ICD10CM:Z55.5"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100055"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000056",
+          "lbl": "performance test disease 0056",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0056 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0056"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0056",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0056",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0056",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0056",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000056"
+              },
+              {
+                "val": "ICD10CM:Z56.6"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100056"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000057",
+          "lbl": "performance test disease 0057",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0057 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0057"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0057",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0057",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0057",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0057",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000057"
+              },
+              {
+                "val": "ICD10CM:Z57.7"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100057"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000058",
+          "lbl": "performance test disease 0058",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0058 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0058"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0058",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0058",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0058",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0058",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000058"
+              },
+              {
+                "val": "ICD10CM:Z58.8"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100058"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000059",
+          "lbl": "performance test disease 0059",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0059 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0059"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0059",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0059",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0059",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0059",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000059"
+              },
+              {
+                "val": "ICD10CM:Z59.9"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100059"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000060",
+          "lbl": "performance test disease 0060",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0060 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0060"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0060",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0060",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0060",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0060",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000060"
+              },
+              {
+                "val": "ICD10CM:Z60.0"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100060"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000061",
+          "lbl": "performance test disease 0061",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0061 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0061"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0061",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0061",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0061",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0061",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000061"
+              },
+              {
+                "val": "ICD10CM:Z61.1"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100061"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000062",
+          "lbl": "performance test disease 0062",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0062 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0062"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0062",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0062",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0062",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0062",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000062"
+              },
+              {
+                "val": "ICD10CM:Z62.2"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100062"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000063",
+          "lbl": "performance test disease 0063",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0063 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0063"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0063",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0063",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0063",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0063",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000063"
+              },
+              {
+                "val": "ICD10CM:Z63.3"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100063"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000064",
+          "lbl": "performance test disease 0064",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0064 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0064"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0064",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0064",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0064",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0064",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000064"
+              },
+              {
+                "val": "ICD10CM:Z64.4"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100064"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000065",
+          "lbl": "performance test disease 0065",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0065 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0065"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0065",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0065",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0065",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0065",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000065"
+              },
+              {
+                "val": "ICD10CM:Z65.5"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100065"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000066",
+          "lbl": "performance test disease 0066",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0066 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0066"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0066",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0066",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0066",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0066",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000066"
+              },
+              {
+                "val": "ICD10CM:Z66.6"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100066"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000067",
+          "lbl": "performance test disease 0067",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0067 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0067"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0067",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0067",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0067",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0067",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000067"
+              },
+              {
+                "val": "ICD10CM:Z67.7"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100067"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000068",
+          "lbl": "performance test disease 0068",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0068 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0068"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0068",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0068",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0068",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0068",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000068"
+              },
+              {
+                "val": "ICD10CM:Z68.8"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100068"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000069",
+          "lbl": "performance test disease 0069",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0069 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0069"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0069",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0069",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0069",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0069",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000069"
+              },
+              {
+                "val": "ICD10CM:Z69.9"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100069"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000070",
+          "lbl": "performance test disease 0070",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0070 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0070"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0070",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0070",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0070",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0070",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000070"
+              },
+              {
+                "val": "ICD10CM:Z70.0"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100070"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000071",
+          "lbl": "performance test disease 0071",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0071 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0071"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0071",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0071",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0071",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0071",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000071"
+              },
+              {
+                "val": "ICD10CM:Z71.1"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100071"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000072",
+          "lbl": "performance test disease 0072",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0072 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0072"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0072",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0072",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0072",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0072",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000072"
+              },
+              {
+                "val": "ICD10CM:Z72.2"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100072"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000073",
+          "lbl": "performance test disease 0073",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0073 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0073"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0073",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0073",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0073",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0073",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000073"
+              },
+              {
+                "val": "ICD10CM:Z73.3"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100073"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000074",
+          "lbl": "performance test disease 0074",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0074 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0074"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0074",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0074",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0074",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0074",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000074"
+              },
+              {
+                "val": "ICD10CM:Z74.4"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100074"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000075",
+          "lbl": "performance test disease 0075",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0075 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0075"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0075",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0075",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0075",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0075",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000075"
+              },
+              {
+                "val": "ICD10CM:Z75.5"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100075"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000076",
+          "lbl": "performance test disease 0076",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0076 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0076"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0076",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0076",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0076",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0076",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000076"
+              },
+              {
+                "val": "ICD10CM:Z76.6"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100076"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000077",
+          "lbl": "performance test disease 0077",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0077 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0077"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0077",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0077",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0077",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0077",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000077"
+              },
+              {
+                "val": "ICD10CM:Z77.7"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100077"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000078",
+          "lbl": "performance test disease 0078",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0078 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0078"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0078",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0078",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0078",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0078",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000078"
+              },
+              {
+                "val": "ICD10CM:Z78.8"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100078"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000079",
+          "lbl": "performance test disease 0079",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0079 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0079"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0079",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0079",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0079",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0079",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000079"
+              },
+              {
+                "val": "ICD10CM:Z79.9"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100079"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000080",
+          "lbl": "performance test disease 0080",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0080 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0080"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0080",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0080",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0080",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0080",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000080"
+              },
+              {
+                "val": "ICD10CM:Z80.0"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100080"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000081",
+          "lbl": "performance test disease 0081",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0081 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0081"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0081",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0081",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0081",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0081",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000081"
+              },
+              {
+                "val": "ICD10CM:Z81.1"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100081"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000082",
+          "lbl": "performance test disease 0082",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0082 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0082"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0082",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0082",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0082",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0082",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000082"
+              },
+              {
+                "val": "ICD10CM:Z82.2"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100082"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000083",
+          "lbl": "performance test disease 0083",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0083 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0083"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0083",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0083",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0083",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0083",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000083"
+              },
+              {
+                "val": "ICD10CM:Z83.3"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100083"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000084",
+          "lbl": "performance test disease 0084",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0084 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0084"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0084",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0084",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0084",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0084",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000084"
+              },
+              {
+                "val": "ICD10CM:Z84.4"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100084"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000085",
+          "lbl": "performance test disease 0085",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0085 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0085"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0085",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0085",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0085",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0085",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000085"
+              },
+              {
+                "val": "ICD10CM:Z85.5"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100085"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000086",
+          "lbl": "performance test disease 0086",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0086 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0086"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0086",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0086",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0086",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0086",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000086"
+              },
+              {
+                "val": "ICD10CM:Z86.6"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100086"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000087",
+          "lbl": "performance test disease 0087",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0087 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0087"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0087",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0087",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0087",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0087",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000087"
+              },
+              {
+                "val": "ICD10CM:Z87.7"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100087"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000088",
+          "lbl": "performance test disease 0088",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0088 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0088"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0088",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0088",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0088",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0088",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000088"
+              },
+              {
+                "val": "ICD10CM:Z88.8"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100088"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000089",
+          "lbl": "performance test disease 0089",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0089 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0089"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0089",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0089",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0089",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0089",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000089"
+              },
+              {
+                "val": "ICD10CM:Z89.9"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100089"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000090",
+          "lbl": "performance test disease 0090",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0090 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0090"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0090",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0090",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0090",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0090",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000090"
+              },
+              {
+                "val": "ICD10CM:Z90.0"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100090"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000091",
+          "lbl": "performance test disease 0091",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0091 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0091"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0091",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0091",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0091",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0091",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000091"
+              },
+              {
+                "val": "ICD10CM:Z91.1"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100091"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000092",
+          "lbl": "performance test disease 0092",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0092 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0092"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0092",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0092",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0092",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0092",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000092"
+              },
+              {
+                "val": "ICD10CM:Z92.2"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100092"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000093",
+          "lbl": "performance test disease 0093",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0093 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0093"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0093",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0093",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0093",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0093",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000093"
+              },
+              {
+                "val": "ICD10CM:Z93.3"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100093"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000094",
+          "lbl": "performance test disease 0094",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0094 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0094"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0094",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0094",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0094",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0094",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000094"
+              },
+              {
+                "val": "ICD10CM:Z94.4"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100094"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000095",
+          "lbl": "performance test disease 0095",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0095 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0095"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0095",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0095",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0095",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0095",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000095"
+              },
+              {
+                "val": "ICD10CM:Z95.5"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100095"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000096",
+          "lbl": "performance test disease 0096",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0096 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0096"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0096",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0096",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0096",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0096",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000096"
+              },
+              {
+                "val": "ICD10CM:Z96.6"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100096"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000097",
+          "lbl": "performance test disease 0097",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0097 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0097"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0097",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0097",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0097",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0097",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000097"
+              },
+              {
+                "val": "ICD10CM:Z97.7"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100097"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000098",
+          "lbl": "performance test disease 0098",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0098 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0098"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0098",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0098",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0098",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0098",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000098"
+              },
+              {
+                "val": "ICD10CM:Z98.8"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100098"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        },
+        {
+          "id": "http://purl.obolibrary.org/obo/DOID_8000099",
+          "lbl": "performance test disease 0099",
+          "type": "CLASS",
+          "meta": {
+            "definition": {
+              "val": "Performance test disease 0099 definition with enough text to simulate real definitions. This includes multiple sentences to test text processing. The definition contains various medical terms and concepts to simulate realistic content processing scenarios.",
+              "xrefs": [
+                "url:http://example.com/disease0099"
+              ]
+            },
+            "synonyms": [
+              {
+                "pred": "hasExactSynonym",
+                "val": "exact synonym 0099",
+                "xrefs": []
+              },
+              {
+                "pred": "hasNarrowSynonym",
+                "val": "narrow synonym 0099",
+                "xrefs": []
+              },
+              {
+                "pred": "hasBroadSynonym",
+                "val": "broad synonym 0099",
+                "xrefs": []
+              },
+              {
+                "pred": "hasRelatedSynonym",
+                "val": "related synonym 0099",
+                "xrefs": []
+              }
+            ],
+            "xrefs": [
+              {
+                "val": "MESH:D000099"
+              },
+              {
+                "val": "ICD10CM:Z99.9"
+              },
+              {
+                "val": "SNOMEDCT_US_2023_03_01:100099"
+              }
+            ],
+            "basicPropertyValues": [
+              {
+                "pred": "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+                "val": "disease_ontology"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -243,14 +243,16 @@ async def _perform_ontology_update(ontology_name: str, source_url: str):
         
         # Update the download history so Streamlit can see it
         download_history_manager = DownloadHistoryManager()
+        # Store filename with subdirectory path relative to data dir
+        filename_with_path = os.path.join("source_ontologies", filename)
         download_history_manager.add_download_record(
             ontology_name=ontology_name,
-            filename=filename,
+            filename=filename_with_path,
             size_bytes=downloaded_size,
             timestamp=download_info["downloaded_at"] + "Z"
         )
         # Update status to available since we just downloaded it
-        download_history_manager.update_file_status(ontology_name, filename, "available")
+        download_history_manager.update_file_status(ontology_name, filename_with_path, "available")
         add_log(f"Updated download history for {ontology_name}")
         
         return download_info

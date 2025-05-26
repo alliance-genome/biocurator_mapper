@@ -3,7 +3,7 @@
 
 # OpenAI Embedding Model Configuration
 model:
-  name: "text-ada-002"  # Options: text-ada-002, text-embedding-3-small, text-embedding-3-large
+  name: "text-embedding-3-small"  # Updated to recommended model
   dimensions: 1536      # Automatically set based on model
   
 # Processing Configuration
@@ -15,9 +15,39 @@ processing:
   
 # Text Fields to Include in Embeddings
 vectorize_fields:
-  name: true           # Include ontology term name
-  definition: true     # Include term definition
-  synonyms: true       # Include term synonyms
+  name: 1.0           # Base weight for ontology term name
+  definition: 0.8     # Slightly lower weight for definition
+  synonyms: 0.6       # Lower weight for synonyms
+  xrefs: 0.4          # Lowest weight for cross-references
+  
+# Ontology-Specific Embedding Settings
+do_specific:
+  synonym_types:
+    exact_synonym: 1.0       # Highest weight for exact synonyms
+    narrow_synonym: 0.8      # Slightly lower weight for narrow synonyms
+    broad_synonym: 0.7       # Lower weight for broad synonyms
+    related_synonym: 0.5     # Lowest weight for related synonyms
+  
+  hierarchy_depth_weight: true  # Consider ontology term hierarchy in weighting
+  max_hierarchy_depth: 5        # Maximum hierarchy depth to consider
+  
+  # DO-specific metadata fields
+  include_metadata:
+    xref_sources: ["MESH", "ICD10CM", "SNOMEDCT", "OMIM"]  # Prioritized external references
+    definition_required: true    # Skip terms without definitions
+    include_obsolete: false      # Exclude obsolete DO terms
+    
+  # Text composition for embeddings
+  text_composition:
+    primary_text: "name"         # Use term name as primary text
+    context_fields: ["definition", "synonyms"]  # Additional context
+    separator: " | "             # Field separator
+    max_text_length: 8000        # Maximum characters per embedding
+    
+  # Quality filters
+  quality_filters:
+    min_definition_length: 10    # Minimum definition character count
+    exclude_patterns: ["deprecated", "obsolete"]  # Patterns to exclude from text
   
 # Text Preprocessing Options
 preprocessing:
@@ -34,3 +64,4 @@ performance:
 usage:
   track_tokens: true         # Track token usage for cost estimation
   log_requests: false        # Log individual embedding requests (for debugging)
+  estimated_cost_per_1k_tokens: 0.00010  # Current OpenAI pricing

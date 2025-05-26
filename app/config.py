@@ -77,3 +77,14 @@ ONTOLOGY_CONFIG = load_ontology_config()
 
 # Load embeddings configuration
 EMBEDDINGS_CONFIG = load_embeddings_config()
+
+
+class Config:
+    """Configuration management class."""
+    
+    def __init__(self):
+        self.embeddings_config_path = EMBEDDINGS_CONFIG_PATH
+        
+    def get_embeddings_config(self) -> Dict[str, Any]:
+        """Get embeddings configuration."""
+        return load_embeddings_config()

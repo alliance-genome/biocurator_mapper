@@ -1,6 +1,6 @@
-from typing import List, Optional
-
+from typing import List, Optional, Dict
 from pydantic import BaseModel, Field
+from dataclasses import dataclass, field
 
 
 class ResolveRequest(BaseModel):
@@ -25,3 +25,20 @@ class ResolveResponse(BaseModel):
 class OntologyUpdateRequest(BaseModel):
     ontology_name: str
     source_url: str
+
+
+@dataclass
+class DOTerm:
+    """
+    Representation of a Disease Ontology (DO) term.
+    
+    Attributes:
+        id (str): Unique identifier for the DO term
+        name (str): Primary name of the term
+        definition (Optional[str]): Description of the term
+        synonyms (Optional[Dict[str, List[str]]]): Synonyms categorized by type
+    """
+    id: str
+    name: str
+    definition: Optional[str] = None
+    synonyms: Optional[Dict[str, List[str]]] = field(default_factory=dict)

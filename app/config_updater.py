@@ -2,7 +2,7 @@ import json
 import os
 import tempfile
 from datetime import datetime
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 from .config import RUNTIME_CONFIG_PATH
 
@@ -198,3 +198,65 @@ class DownloadHistoryManager:
             history = {}
         
         self._write_history(history)
+    
+    def verify_file_exists(self, filename: str) -> bool:
+        """Check if a downloaded file still exists on disk."""
+        data_dir = os.environ.get("ONTOLOGY_DATA_DIR", "/app/data")
+        file_path = os.path.join(data_dir, filename)
+        return os.path.exists(file_path)
+    
+    def update_file_status(self, ontology_name: str, filename: str, status: str) -> None:
+        """Update the status of a specific download record."""
+        history = self._read_history()
+        
+        if ontology_name in history:
+            for record in history[ontology_name]:
+                if record.get("filename") == filename:
+                    record["status"] = status
+                    record["last_verified"] = datetime.utcnow().isoformat() + "Z"
+                    break
+        
+        self._write_history(history)
+    
+    def verify_all_downloads(self) -> Dict[str, List[Dict]]:
+        """Verify all download records and update their status."""
+        history = self._read_history()
+        verification_results = {}
+        
+        for ontology_name, records in history.items():
+            verification_results[ontology_name] = []
+            
+            for record in records:
+                filename = record.get("filename", "")
+                exists = self.verify_file_exists(filename)
+                
+                # Update status based on file existence
+                if exists:
+                    record["status"] = "available"
+                else:
+                    record["status"] = "file_missing"
+                
+                record["last_verified"] = datetime.utcnow().isoformat() + "Z"
+                verification_results[ontology_name].append({
+                    "filename": filename,
+                    "exists": exists,
+                    "status": record["status"]
+                })
+        
+        self._write_history(history)
+        return verification_results
+    
+    def get_latest_available_download(self, ontology_name: str) -> Optional[Dict]:
+        """Get the most recent download record with an available file."""
+        history = self._read_history()
+        
+        if ontology_name not in history:
+            return None
+        
+        # Check records in reverse order (most recent first)
+        for record in reversed(history[ontology_name]):
+            if self.verify_file_exists(record.get("filename", "")):
+                record["status"] = "available"
+                return record
+        
+        return None

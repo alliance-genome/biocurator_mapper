@@ -200,3 +200,7 @@ debug_*.py
 
 # E2E test runner scripts
 run_e2e_tests.sh
+
+# Development planning documents
+TASKS.md
+.mcp.json

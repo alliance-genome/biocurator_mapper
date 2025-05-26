@@ -53,6 +53,9 @@ services:
       - ADMIN_API_KEY=${ADMIN_API_KEY:-admin-secret-key}
       - ONTOLOGY_CONFIG_PATH=/app/ontology_config.yaml
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ONTOLOGY_DATA_DIR=/app/data
+    volumes:
+      - app_config_data:/app/data
     depends_on:
       fastapi:
         condition: service_healthy

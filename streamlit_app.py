@@ -217,6 +217,21 @@ def clear_download_history(ont_name: str):
         st.error(f"Failed to clear download history: {e}")
 
 
+def get_ontology_download_status(ont_name: str, api_key: str) -> dict:
+    """Get download status for an ontology from the API."""
+    try:
+        resp = requests.get(
+            f"{FASTAPI_URL}/admin/download_status/{ont_name}",
+            headers={"X-API-Key": api_key},
+            timeout=5
+        )
+        if resp.ok:
+            return resp.json()
+        return {"status": "unknown", "error": resp.text}
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
+
+
 
 def show_embedding_progress(ont_name: str, api_key: str):
     """Display embedding generation progress with real-time updates."""
@@ -1150,20 +1165,67 @@ if st.session_state.get('show_ontology_embedding_management', False):
     
     st.markdown("---")
     
+    # Add verify downloads button
+    col1, col2, col3 = st.columns([2, 2, 1])
+    with col3:
+        if st.button("🔍 Verify Downloads", key="verify_downloads", help="Check if all downloaded files still exist"):
+            with st.spinner("Verifying downloads..."):
+                try:
+                    api_key = st.session_state.get('api_key', '')
+                    resp = requests.get(
+                        f"{FASTAPI_URL}/admin/verify_downloads",
+                        headers={"X-API-Key": api_key},
+                        timeout=10
+                    )
+                    if resp.ok:
+                        st.success("✅ Download verification complete")
+                        st.rerun()
+                    else:
+                        st.error(f"Verification failed: {resp.text}")
+                except Exception as e:
+                    st.error(f"Error verifying downloads: {str(e)}")
+    
     if not ontologies:
         st.warning("⚠️ No ontologies configured.")
     else:
-        # Check which ontologies have been downloaded (exist in ontology_versions.json)
+        # Check which ontologies have been downloaded and their status
         available_for_embedding = []
+        unavailable_ontologies = []
+        
+        api_key = st.session_state.get('api_key', '')
+        
         for ont_name, ont_config in ontologies.items():
             if ont_config.get("enabled", True):
-                # Check if ontology has been downloaded
-                history = get_download_history(ont_name)
-                if history:  # Has download history = available for embedding
-                    available_for_embedding.append((ont_name, ont_config))
+                # Get detailed download status from API
+                status_info = get_ontology_download_status(ont_name, api_key)
+                status = status_info.get("status", "unknown")
+                
+                if status == "ready_for_embedding":
+                    available_for_embedding.append((ont_name, ont_config, status_info))
+                else:
+                    unavailable_ontologies.append((ont_name, ont_config, status_info))
+        
+        # Show status for unavailable ontologies
+        if unavailable_ontologies:
+            st.markdown("### ⚠️ Unavailable Ontologies")
+            for ont_name, ont_config, status_info in unavailable_ontologies:
+                status = status_info.get("status", "unknown")
+                if status == "not_downloaded":
+                    st.warning(f"**{ont_name}**: Not downloaded yet - use the Update Management page to download")
+                elif status == "file_missing":
+                    last_download = status_info.get("latest_available", {})
+                    if last_download:
+                        timestamp = last_download.get("timestamp", "unknown time")
+                        st.warning(f"**{ont_name}**: File missing (last downloaded {timestamp})")
+                    else:
+                        st.warning(f"**{ont_name}**: Downloaded files are missing - please re-download")
+                elif status == "error":
+                    st.error(f"**{ont_name}**: Error checking status - {status_info.get('error', 'unknown error')}")
+                else:
+                    st.warning(f"**{ont_name}**: Status unknown")
         
         if not available_for_embedding:
-            st.warning("⚠️ No ontologies available for embedding. Please download ontologies first using the Update Management page.")
+            st.info("💡 No ontologies are ready for embedding. Please download ontologies first using the Update Management page.")
         else:
             st.markdown("### 📋 Available Ontologies for Embedding")
             
@@ -1175,7 +1237,7 @@ if st.session_state.get('show_ontology_embedding_management', False):
             }
             estimated_cost = cost_per_1k.get(model_name, 0.0001)
             
-            for ont_name, ont_config in available_for_embedding:
+            for ont_name, ont_config, status_info in available_for_embedding:
                 # Check if embedding is in progress
                 has_active_embedding = f"embedding_progress_{ont_name}" in st.session_state
                 

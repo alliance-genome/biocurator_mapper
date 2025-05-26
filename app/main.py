@@ -249,6 +249,8 @@ async def _perform_ontology_update(ontology_name: str, source_url: str):
             size_bytes=downloaded_size,
             timestamp=download_info["downloaded_at"] + "Z"
         )
+        # Update status to available since we just downloaded it
+        download_history_manager.update_file_status(ontology_name, filename, "available")
         add_log(f"Updated download history for {ontology_name}")
         
         return download_info
@@ -307,6 +309,50 @@ async def cancel_update(ontology_name: str, api_key: str = Depends(verify_api_ke
 @app.get("/admin/ontology_status")
 async def ontology_status(api_key: str = Depends(verify_api_key)):
     return config_updater.get_all_ontology_configs()
+
+@app.get("/admin/verify_downloads")
+async def verify_downloads(api_key: str = Depends(verify_api_key)):
+    """Verify all download records and update their status."""
+    download_manager = DownloadHistoryManager()
+    verification_results = download_manager.verify_all_downloads()
+    
+    return {
+        "verified_at": datetime.utcnow().isoformat() + "Z",
+        "results": verification_results
+    }
+
+@app.get("/admin/download_status/{ontology_name}")
+async def get_download_status(ontology_name: str, api_key: str = Depends(verify_api_key)):
+    """Get the download status for a specific ontology."""
+    download_manager = DownloadHistoryManager()
+    
+    # Get the latest available download
+    latest_download = download_manager.get_latest_available_download(ontology_name)
+    
+    # Get full history
+    all_history = download_manager.get_download_history()
+    ontology_history = all_history.get(ontology_name, [])
+    
+    # Determine overall status
+    if not ontology_history:
+        status = "not_downloaded"
+    elif latest_download:
+        status = "ready_for_embedding"
+    else:
+        # Check if any files exist
+        any_exist = any(
+            download_manager.verify_file_exists(record.get("filename", ""))
+            for record in ontology_history
+        )
+        status = "file_missing" if not any_exist else "unknown"
+    
+    return {
+        "ontology_name": ontology_name,
+        "status": status,
+        "latest_available": latest_download,
+        "total_downloads": len(ontology_history),
+        "history": ontology_history
+    }
 
 @app.get("/ontology_config")
 async def get_ontology_config_endpoint():
